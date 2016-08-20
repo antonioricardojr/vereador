@@ -34,3 +34,10 @@ see_themes = function(ementas_count){
         sg_fill_brewer("PuOr") %>%
         sg_legend(show = TRUE, label = "gênero: ")
 }
+
+#* @get /vereadores/lista
+get_vereadores_lista = function(){
+  lista <- get_vereadores_all(camara_db)
+  
+  return(jsonlite::toJSON(lista))
+}
