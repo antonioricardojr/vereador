@@ -63,3 +63,12 @@ get_vereadores_lista = function(){
 
   return(lista)
 }
+
+#* @get /vereadores/vereador
+get_vereador_id = function(id){
+  vereador <- get_vereadores_id(camara_db) %>%
+    select(sequencial_candidato, nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
+    filter(sequencial_candidato == id)
+  
+  return(jsonlite::toJSON(vereador))
+}

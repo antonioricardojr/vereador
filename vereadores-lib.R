@@ -60,3 +60,11 @@ get_vereadores_all = function(db){
 
     return(vereadores_lista)
 }
+
+get_vereadores_id = function(db){
+  vereadores_lista <- get_vereadores_raw(db) %>%
+    select(sequencial_candidato, nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
+    collect()
+  
+  return(vereadores_lista)
+}
