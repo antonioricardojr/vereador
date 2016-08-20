@@ -14,17 +14,31 @@ start_camaraDB <- function(port = 5432, host = "localhost") {
     )
 }
 
-
-get_ementas = function(){
-    ementas_raw <- tbl(camara_db, sql("SELECT * FROM ementas")) %>%
+get_ementasraw = function(db){
+    ementas_raw <- tbl(db, sql("SELECT * FROM ementas")) %>%
         filter(published_date >= "2009-01-01") %>%
-        mutate(published_month = date_trunc('month', published_date))
+        mutate(published_month = date_trunc('month', published_date)) %>%
+        return()
+}
 
-    ementas <- ementas_raw %>%
-        select(published_date, published_month, main_theme, situation) %>%
+get_ementas_all = function(db) {
+    #' Opções de group_by:
+    ementas <- get_ementasraw(db) %>%
+        #select_(group_by, "published_date", "published_month", "situation") %>%
         collect() %>%
-        mutate(govern = ifelse(published_date < "2013-01-01", "Anterior (2009 - 2012)", "Atual (2013 - 2016)"),
-               published_year = year(published_date))
+        mutate(
+            govern = ifelse(
+                published_date < "2013-01-01",
+                "Anterior (2009 - 2012)",
+                "Atual (2013 - 2016)"
+            ),
+            situation = ifelse(
+                situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
+                "ARQUIVADO/REJEITADO/RETIRADO",
+                ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+            ),
+            published_year = year(published_date)
+        )
 
     return(ementas)
 }
