@@ -27,6 +27,7 @@ get_theme_count = function(count_by = "tema"){
         rename_(month = "published_month", count = "n") %>%
         arrange(month)
 
+    # Adiciona zeros para as combinações de
     month = unique(theme_count_m$month)
     x2 = unique(unlist(theme_count_m[, count_by]))
     answer <-
@@ -36,6 +37,7 @@ get_theme_count = function(count_by = "tema"){
             theme_count_m,
             by = c("Var1" = "month", "Var2" = count_by)) %>%
         mutate(count = ifelse(is.na(count), 0, count))
+    names(answer) = c("month", count_by, "count")
 
     return(jsonlite::toJSON(answer))
 }
@@ -57,6 +59,6 @@ see_themes = function(ementas_count){
 #* @get /vereadores/lista
 get_vereadores_lista = function(){
   lista <- get_vereadores_all(camara_db)
-  
+
   return(jsonlite::toJSON(lista))
 }
