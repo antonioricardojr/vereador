@@ -42,3 +42,16 @@ get_ementas_all = function(db) {
 
     return(ementas)
 }
+
+get_vereadores_raw = function(db){
+  vereadores_raw <- tbl(db, sql("SELECT * FROM consulta_cand")) %>%
+  return()
+}
+
+get_vereadores_all = function(db){
+  vereadores_lista <- get_vereadores_raw(db) %>%
+    select(nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
+    collect()
+  
+  return(vereadores_lista)
+}

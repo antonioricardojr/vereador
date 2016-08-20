@@ -53,3 +53,10 @@ see_themes = function(ementas_count){
         geom_area(aes(x = month, y = count, colour = ementa_type, fill = ementa_type), position = "stack")
     ggplotly(p)
 }
+
+#* @get /vereadores/lista
+get_vereadores_lista = function(){
+  lista <- get_vereadores_all(camara_db)
+  
+  return(jsonlite::toJSON(lista))
+}
