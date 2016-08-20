@@ -40,8 +40,7 @@ get_theme_count = function(count_by = "tema"){
         mutate(count = ifelse(is.na(count), 0, count))
     names(answer) = c("month", count_by, "count")
 
-    #return(jsonlite::toJSON(answer))
-    return(list(answer))
+    return(answer)
 }
 
 see_themes = function(ementas_count){
@@ -58,9 +57,9 @@ see_themes = function(ementas_count){
     ggplotly(p)
 }
 
-#* @get /vereadores/lista
+#* @get /vereadores
 get_vereadores_lista = function(){
   lista <- get_vereadores_all(camara_db)
 
-  return(list(lista))
+  return(lista)
 }
