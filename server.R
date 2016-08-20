@@ -8,12 +8,16 @@ camara_db <- start_camaraDB()
 
 #* @get /ementas/contagem
 get_theme_count = function(count_by = "tema"){
-    #' Opções de count_by: main_theme, situation
-    traducao = list("tema" = "main_theme", "situacao" = "situation", "tipo" = "ementa_type")
+    #' Conta as ementas por mês.
+    #' TODO: retornamos apenas a partir de 2013.
+    traducao = list("tema" = "main_theme",
+                    "situacao" = "situation",
+                    "tipo" = "ementa_type")
     count_by = traducao[[count_by]]
     if(is.null(count_by)){
         stop("count_by não suportado")
     }
+
     theme_count_m <- get_ementas_all(camara_db) %>%
         select_(count_by, "published_date", "published_month") %>%
         filter(year(published_date) >= 2013) %>%
@@ -23,7 +27,19 @@ get_theme_count = function(count_by = "tema"){
         rename_(month = "published_month", count = "n") %>%
         arrange(month)
 
-    return(jsonlite::toJSON(theme_count_m))
+    # Adiciona zeros para as combinações de
+    month = unique(theme_count_m$month)
+    x2 = unique(unlist(theme_count_m[, count_by]))
+    answer <-
+        left_join(
+            expand.grid(month, x2,
+                stringsAsFactors = F),
+            theme_count_m,
+            by = c("Var1" = "month", "Var2" = count_by)) %>%
+        mutate(count = ifelse(is.na(count), 0, count))
+    names(answer) = c("month", count_by, "count")
+
+    return(jsonlite::toJSON(answer))
 }
 
 see_themes = function(ementas_count){
@@ -33,11 +49,16 @@ see_themes = function(ementas_count){
         #sg_axis_x(10) %>%
         sg_fill_brewer("PuOr") %>%
         sg_legend(show = TRUE, label = "gênero: ")
+
+    p = theme_count_m %>%
+        ggplot() +
+        geom_area(aes(x = month, y = count, colour = ementa_type, fill = ementa_type), position = "stack")
+    ggplotly(p)
 }
 
 #* @get /vereadores/lista
 get_vereadores_lista = function(){
   lista <- get_vereadores_all(camara_db)
-  
+
   return(jsonlite::toJSON(lista))
 }
