@@ -1,0 +1,23 @@
+{
+    "name": "vereador",
+    "homepage": "https://github.com/antonioricardojr/vereador",
+    "authors": [
+        "Antonio Marques Jr. <antonioricardojr@gmail.com>"
+    ],
+    "description": "",
+    "main": "",
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "bootstrap": "^3.3.7",
+        "angular": "^1.5.8",
+        "jquery": "2.2.1",
+        "font-awesome": "^4.6.3"
+    }
+}
