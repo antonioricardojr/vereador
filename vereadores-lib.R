@@ -37,6 +37,11 @@ get_ementas_all = function(db) {
                 "ARQUIVADO/REJEITADO/RETIRADO",
                 ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
             ),
+            ementa_type = ifelse(ementa_type == "LEI ORDINÁRIA", "PROJETO DE LEI ORDINÁRIA",
+                                 ifelse(ementa_type == "LEI COMPLEMENTAR", "PROJETO DE LEI COMPLEMENTAR",
+                                        ementa_type)),
+            main_theme = ifelse(ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA",
+                                "TRANSITO URBANO", main_theme),
             published_year = year(published_date)
         )
 
@@ -44,14 +49,14 @@ get_ementas_all = function(db) {
 }
 
 get_vereadores_raw = function(db){
-  vereadores_raw <- tbl(db, sql("SELECT * FROM consulta_cand")) %>%
-  return()
+    vereadores_raw <- tbl(db, sql("SELECT * FROM consulta_cand")) %>%
+        return()
 }
 
 get_vereadores_all = function(db){
-  vereadores_lista <- get_vereadores_raw(db) %>%
-    select(nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
-    collect()
-  
-  return(vereadores_lista)
+    vereadores_lista <- get_vereadores_raw(db) %>%
+        select(nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
+        collect()
+
+    return(vereadores_lista)
 }
