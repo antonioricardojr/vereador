@@ -13,4 +13,4 @@
 
 *  **URL Params**
 
-   `count_by=[tema|situacao]`
+   `count_by=[tema|situacao|tipo]`

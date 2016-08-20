@@ -9,7 +9,7 @@ camara_db <- start_camaraDB()
 #* @get /ementas/contagem
 get_theme_count = function(count_by = "tema"){
     #' Opções de count_by: main_theme, situation
-    traducao = list("tema" = "main_theme", "situacao" = "situation")
+    traducao = list("tema" = "main_theme", "situacao" = "situation", "tipo" = "ementa_type")
     count_by = traducao[[count_by]]
     if(is.null(count_by)){
         stop("count_by não suportado")
