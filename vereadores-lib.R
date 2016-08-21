@@ -119,3 +119,28 @@ get_relevancia_ementas = function(db){
         return()
 
 }
+
+sumariza_no_tempo = function(ementas, count_by, period = "published_month"){
+    theme_count_m <- ementas %>%
+        select_(count_by, "published_date", period) %>%
+        filter(year(published_date) >= 2013) %>%
+        group_by_(period) %>%
+        count_(count_by) %>%
+        ungroup() %>%
+        rename_(time = period, count = "n") %>%
+        arrange(time)
+
+    # Adiciona zeros para as combinações de data
+    # e count_by que não existem
+    times = unique((do.call(c, theme_count_m[, "time"]))) # unlist mata as datas
+    x2 = unique(unlist(theme_count_m[, count_by]))
+    answer <-
+        left_join(
+            expand.grid(times, x2,
+                        stringsAsFactors = F),
+            theme_count_m,
+            by = c("Var1" = "time", "Var2" = count_by)) %>%
+        mutate(count = ifelse(is.na(count), 0, count))
+    names(answer) = c("time", count_by, "count")
+    return(answer)
+}
