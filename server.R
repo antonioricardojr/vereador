@@ -65,3 +65,11 @@ get_vereador_ementas = function(nome = '', ano = 2012){
 
   return(ementas_vereador)
 }
+
+#* @get /relevancia/propostas
+get_relevacia_propostas = function(ano = 2012){
+  
+  relevancia_propostas <- get_relevancia_ementas(camara_db, ano)
+  
+  return(relevancia_propostas)
+}

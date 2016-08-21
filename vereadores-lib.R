@@ -51,7 +51,7 @@ get_ementas_all = function(db) {
 
 get_vereadores_raw = function(db, id = NA, ano_eleicao = NA){
     if(is.na(id) & is.na(ano_eleicao)) {
-        tbl(db, sql("SELECT * FROM consulta_cand")) %>%
+        tbl(db, sql("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE'")) %>%
             return()
     }
     if(is.na(ano_eleicao)) {
@@ -122,8 +122,8 @@ get_ementas_por_vereador = function(db, nome, ano) {
 # Tipos de ementas desconsideradas: LEI COMPLEMENTAR, LEI ORDINÁRIA, EM IMPLANTAÇÃO
 
 # Funcao de relevancia das ementas (proof of concept)
-get_relevancia_ementas = function(db){
-    type_relevance <- c(1, 1, 1, 2, 2, 3, 4, 5)
+get_relevancia_ementas = function(db, ano){
+    type_relevance <- c(1, 1, 1, 1, 2, 2, 3, 4, 5)
     ementa_types <- c("DECRETO",
                       "PROJETO DE DECRETO LEGISLATIVO",
                       "PROJETO DE RESOLUÇÃO",
@@ -155,6 +155,7 @@ get_relevancia_ementas = function(db){
                                                               rep(5, length(themes_relevance_5))))
 
     get_ementas_all(db) %>%
+        filter(year(published_date) == ano) %>%
         left_join(type_relevance_df, by = "ementa_type") %>%
         left_join(theme_relevance_df, by = "main_theme") %>%
         mutate(ementa_type_relevance = ifelse(is.na(ementa_type_relevance), 3, ementa_type_relevance),
