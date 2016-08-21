@@ -48,23 +48,31 @@ get_ementas_all = function(db) {
     return(ementas)
 }
 
-get_vereadores_raw = function(db){
-    vereadores_raw <- tbl(db, sql("SELECT * FROM consulta_cand")) %>%
-        return()
+get_vereadores_raw = function(db, id = NA, ano_eleicao = NA){
+    if(is.na(id) & is.na(ano_eleicao)) {
+        tbl(db, sql("SELECT * FROM consulta_cand")) %>%
+            return()
+    }
+    if(is.na(ano_eleicao)) {
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where sequencial_candidato = ", id))) %>%
+            return()
+    }
+    if(is.na(id)) {
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where ano_eleicao = ", ano_eleicao))) %>%
+            return()
+    } else{
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where sequencial_candidato = ",
+                           id,
+                           " and ano_eleicao = ",
+                           ano_eleicao))) %>%
+            return()
+    }
 }
 
-get_vereadores_all = function(db){
-    vereadores_lista <- get_vereadores_raw(db) %>%
+get_vereadores = function(db, id = NA, ano_eleicao = 2012){
+    vereadores_lista <- get_vereadores_raw(db, id, ano_eleicao) %>%
         select(nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
         collect()
 
     return(vereadores_lista)
-}
-
-get_vereadores_id = function(db){
-  vereadores_lista <- get_vereadores_raw(db) %>%
-    select(sequencial_candidato, nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
-    collect()
-  
-  return(vereadores_lista)
 }

@@ -45,9 +45,7 @@ get_theme_count = function(count_by = "tema"){
 
 see_themes = function(ementas_count){
     theme_count_m %>%
-        #filter(ano >= ano_inicial, ano <= ano_final) %>%
         streamgraph("theme", "count", "month") %>%
-        #sg_axis_x(10) %>%
         sg_fill_brewer("PuOr") %>%
         sg_legend(show = TRUE, label = "gênero: ")
 
@@ -58,17 +56,9 @@ see_themes = function(ementas_count){
 }
 
 #* @get /vereadores
-get_vereadores_lista = function(){
-  lista <- get_vereadores_all(camara_db)
-
-  return(lista)
-}
-
-#* @get /vereadores/vereador
-get_vereador_id = function(id){
-  vereador <- get_vereadores_id(camara_db) %>%
-    select(sequencial_candidato, nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
-    filter(sequencial_candidato == id)
-  
-  return(jsonlite::toJSON(vereador))
+get_vereador_id = function(id = NA, ano_eleicao = 2012){
+    id = as.numeric(id)
+    ano_eleicao = as.numeric(ano_eleicao)
+    vereador = get_vereadores(camara_db, id, ano_eleicao)
+    return(vereador)
 }
