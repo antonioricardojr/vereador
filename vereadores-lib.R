@@ -77,3 +77,39 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
 
     return(vereadores_lista)
 }
+
+# Funcao de relevancia das ementas (proof of concept)
+get_relevancia_ementas = function(db){
+    type_relevance <- c(1, 1, 2, 2, 3, 4, 5)
+    ementa_types <- c("DECRETO", "PEDIDO DE INFORMAÇÃO", "INDICAÇÃO", "REQUERIMENTO", "PROJETO DE LEI ORDINÁRIA",
+                      "PROJETO DE LEI COMPLEMENTAR", "PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO")
+    type_relevance_df <- data_frame(ementa_type = ementa_types,
+                                    ementa_type_relevance = type_relevance)
+
+    themes_relevance_1 <- c("CONGRATULAÇÕES", "VOTO DE APLAUSO", "MEDALHA DE HONRA AO MÉRITO",
+                        "DENOMINAÇÃO DE RUA", "DAR NOME A PRÓPRIO PÚBLICO", "DENOMINAÇÃO DE CRECHE", "DENOMINAÇAO DE ESCOLA")
+    themes_relevance_2 <- c("DIA MUNICIPAL", "FERIADOS", "MOÇÃO")
+    themes_relevance_3 <- c()
+    themes_relevance_4 <- c("SESSÃO ESPECIAL")
+    themes_relevance_5 <- c("ALTERAÇÂO DE LEI", "CÓDIGO TRIBUTÁRIO MUNICIPAL")
+
+    theme_relevance_df <- data_frame(main_theme = c(themes_relevance_1,
+                                                    themes_relevance_2,
+                                                    themes_relevance_3,
+                                                    themes_relevance_4,
+                                                    themes_relevance_5),
+                                     main_theme_relevance = c(rep(1, length(themes_relevance_1)),
+                                                              rep(2, length(themes_relevance_2)),
+                                                              rep(3, length(themes_relevance_3)),
+                                                              rep(4, length(themes_relevance_4)),
+                                                              rep(5, length(themes_relevance_5))))
+
+    get_ementas_all(db) %>%
+        left_join(type_relevance_df, by = "ementa_type") %>%
+        left_join(theme_relevance_df, by = "main_theme") %>%
+        mutate(ementa_type_relevance = ifelse(is.na(ementa_type_relevance), 3, ementa_type_relevance),
+               main_theme_relevance = ifelse(is.na(main_theme_relevance), 3, main_theme_relevance),
+               ementa_relevance = ementa_type_relevance + main_theme_relevance) %>%
+        return()
+
+}
