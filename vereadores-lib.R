@@ -78,6 +78,22 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
     return(vereadores_lista)
 }
 
+#Junção de vereador com ementas
+get_ementas_por_vereador_raw = function(db, nome) {
+  ementas_por_vereador_raw <- tbl(db, 
+                                  sql(paste("SELECT * FROM consulta_cand v, ementas e 
+                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and v.nome_candidato ilike '%", nome, "%' and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 15)||'%'", sep = "")))  %>%
+    return()
+}
+
+#Busca de ementas por nome de vereador
+get_ementas_por_vereador = function(db, nome) {
+  ementas_por_vereador <- get_ementas_por_vereador_raw(db, nome) %>%
+    collect()
+  
+  return(ementas_por_vereador)
+}
+
 # Funcao de relevancia das ementas (proof of concept)
 get_relevancia_ementas = function(db){
     type_relevance <- c(1, 1, 1, 2, 2, 3, 4, 5)
@@ -118,4 +134,29 @@ get_relevancia_ementas = function(db){
                ementa_relevance = ementa_type_relevance + main_theme_relevance) %>%
         return()
 
+}
+
+sumariza_no_tempo = function(ementas, count_by, period = "published_month"){
+    theme_count_m <- ementas %>%
+        select_(count_by, "published_date", period) %>%
+        filter(year(published_date) >= 2013) %>%
+        group_by_(period) %>%
+        count_(count_by) %>%
+        ungroup() %>%
+        rename_(time = period, count = "n") %>%
+        arrange(time)
+
+    # Adiciona zeros para as combinações de data
+    # e count_by que não existem
+    times = unique((do.call(c, theme_count_m[, "time"]))) # unlist mata as datas
+    x2 = unique(unlist(theme_count_m[, count_by]))
+    answer <-
+        left_join(
+            expand.grid(times, x2,
+                        stringsAsFactors = F),
+            theme_count_m,
+            by = c("Var1" = "time", "Var2" = count_by)) %>%
+        mutate(count = ifelse(is.na(count), 0, count))
+    names(answer) = c("time", count_by, "count")
+    return(answer)
 }
