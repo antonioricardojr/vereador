@@ -22,10 +22,24 @@ get_theme_count = function(count_by = "tema"){
     return(answer)
 }
 
+#* @get /ementas/radial
 get_weekly_radialinfo = function(){
     #' Retorno dia, min, media, máx, aprovados
-    #'
-
+  ementas = get_ementas_all(camara_db) %>% 
+    mutate(weekly = floor(yday(published_date) / 7)) %>% 
+    sumariza_no_tempo("situation", "weekly") 
+  answer = ementas %>% 
+    group_by(time) %>% 
+    summarise(
+      min = min(count),
+      max = max(count),
+      media = mean(count)
+    )
+  aprovados = ementas %>% 
+    filter(situation == "APROVADO") %>% 
+    group_by(time) %>% 
+    summarise(aprovados = sum(count))
+  return(left_join(answer, aprovados))
 }
 
 #* @get /vereadores
@@ -41,13 +55,13 @@ get_vereador_ementas = function(nome){
   if(is.null(nome)){
     stop("Informe o nome do vereador: /vereadores/ementas?nome=xuxa")
   }
-  
+
   ementas_vereador <- get_ementas_por_vereador(camara_db, nome)
-  
+
   if (NROW(ementas_vereador) != 0) {
     ementas_vereador <- ementas_vereador %>%
       select(sequencial_candidato, nome_candidato, document_number, process_number, ementa_type, published_date, approval_date, title, source, proponents, situation, main_theme)
   }
-  
+
   return(ementas_vereador)
 }
