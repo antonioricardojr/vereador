@@ -79,25 +79,53 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
 }
 
 #Junção de vereador com ementas
-get_ementas_por_vereador_raw = function(db, nome) {
+get_ementas_por_vereador_raw = function(db, nome, ano) {
   ementas_por_vereador_raw <- tbl(db, 
                                   sql(paste("SELECT * FROM consulta_cand v, ementas e 
-                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and v.nome_candidato ilike '%", nome, "%' and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 15)||'%'", sep = "")))  %>%
+                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and (extract(year from e.published_date) = ", ano, ") and v.nome_candidato ilike '%", nome, "%' and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 10)||'%'", sep = "")))  %>%
+    return()
+}
+
+#Junção de vereador com ementas, exibir todas as propostas
+get_propostas_todos_vereador_raw = function(db, ano) {
+  propostas_por_vereador_raw <- tbl(db, 
+                                  sql(paste("SELECT * FROM consulta_cand v, ementas e 
+                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and (extract(year from e.published_date) = ", ano, ") and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 10)||'%'", sep = "")))  %>%
     return()
 }
 
 #Busca de ementas por nome de vereador
-get_ementas_por_vereador = function(db, nome) {
-  ementas_por_vereador <- get_ementas_por_vereador_raw(db, nome) %>%
-    collect()
+get_ementas_por_vereador = function(db, nome, ano) {
+  if (nome != '') {
+    propostas <- get_ementas_por_vereador_raw(db, nome, ano) %>%
+                 collect()
+  } else {
+    propostas <- get_propostas_todos_vereador_raw(db, ano) %>%
+                collect()
+  }
   
-  return(ementas_por_vereador)
+  return(propostas)
 }
+
+# Atos Normativos: 
+# PROJETO DE RESOLUÇÃO, 
+# PROJETO DE DECRETO LEGISLATIVO ou DECRETO, 
+# PROJETO DE LEI COMPLEMENTAR, 
+# PROJETO DE LEI ORDINÁRIA, 
+# PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO
+
+# Atos Administrativos
+# REQUERIMENTO
+# INDICAÇÂO
+# PEDIDO DE INFORMAÇÃO
+
+# Tipos de ementas desconsideradas: LEI COMPLEMENTAR, LEI ORDINÁRIA, EM IMPLANTAÇÃO
 
 # Funcao de relevancia das ementas (proof of concept)
 get_relevancia_ementas = function(db){
     type_relevance <- c(1, 1, 1, 2, 2, 3, 4, 5)
     ementa_types <- c("DECRETO",
+                      "PROJETO DE DECRETO LEGISLATIVO",
                       "PROJETO DE RESOLUÇÃO",
                       "PEDIDO DE INFORMAÇÃO",
                       "INDICAÇÃO",
@@ -107,7 +135,7 @@ get_relevancia_ementas = function(db){
                       "PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO")
     type_relevance_df <- data_frame(ementa_type = ementa_types,
                                     ementa_type_relevance = type_relevance)
-
+    
     themes_relevance_1 <- c("CONGRATULAÇÕES", "VOTO DE APLAUSO", "MEDALHA DE HONRA AO MÉRITO",
                         "DENOMINAÇÃO DE RUA", "DAR NOME A PRÓPRIO PÚBLICO", "DENOMINAÇÃO DE CRECHE", "DENOMINAÇAO DE ESCOLA")
     themes_relevance_2 <- c("DIA MUNICIPAL", "FERIADOS", "MOÇÃO")
