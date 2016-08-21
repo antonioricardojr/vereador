@@ -71,7 +71,7 @@ get_vereadores_raw = function(db, id = NA, ano_eleicao = NA){
 
 get_vereadores = function(db, id = NA, ano_eleicao = 2012){
     vereadores_lista <- get_vereadores_raw(db, id, ano_eleicao) %>%
-        select(nome_candidato, nome_urna_candidato, descricao_ocupacao, ano_eleicao) %>%
+        select(3, 11, 12, 13, 14, 15, 19, 23, 25, 26, 27, 29, 31, 33, 35, 40, 44) %>%
         collect()
 
     return(vereadores_lista)
