@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="app">
 
 <head>
     <meta charset="utf-8">
@@ -23,37 +23,40 @@
     <![endif]-->
 </head>
 
-<body>
+<body ng-controller="MainController">
     <!-- Navigation -->
     <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
     <nav id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
             <li class="sidebar-brand">
-                <a href="#top" onclick=$( "#menu-close").click();>O que faz o Vereador?</a>
+                <a class="menu" href="#top" onclick='$( "#menu-close").click();'>{{ title }}</a>
             </li>
             <li>
-                <a href="#top" onclick=$( "#menu-close").click();>Home</a>
+                <a class="menu" href="#about" onclick='$( "#menu-close").click();'>Visão Geral</a>
             </li>
             <li>
-                <a href="#about" onclick=$( "#menu-close").click();>About</a>
+                <a class="menu" href="#time" onclick='$( "#menu-close").click()' ;>Ao longo do tempo</a>
             </li>
             <li>
-                <a href="#services" onclick=$( "#menu-close").click();>Services</a>
+                <a class="menu" href="#services" onclick='$( "#menu-close").click();'>Services</a>
             </li>
             <li>
-                <a href="#portfolio" onclick=$( "#menu-close").click();>Portfolio</a>
+                <a class="menu" href="#location" onclick='$( "#menu-close").click();'>Onde ficam</a>
             </li>
             <li>
-                <a href="#contact" onclick=$( "#menu-close").click();>Contact</a>
+                <a class="menu" href="#mais-projetos" onclick='$( "#menu-close").click();'>Mais Projetos</a>
+            </li>
+            <li>
+                <a class="menu" href="#sobre-hackfest" onclick='$( "#menu-close").click();'>Sobre o Hackfest</a>
             </li>
         </ul>
     </nav>
     <!-- Header -->
     <header id="top" class="header">
-        <div class="text-vertical-center">
-            <h1>O que faz o Vereador?</h1>
-            <h3>Uma visão geral do que ocorre na câmara dos vereadores de Campina Grande-PB</h3>
+        <div class="text-vertical-center" style="background: rgba(255,255,255,0.5);">
+            <h1>{{title}}</h1>
+            <h2>{{ subtitle }}</h2>
             <br>
             <a href="#about" class="btn btn-dark btn-lg">Saiba mais</a>
         </div>
@@ -63,13 +66,35 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2>Ao longo do tempo...</h2>
-                    <p class="lead">A câmara dos vereadores cria ementas em diversas áreas. Mas há algo que chama a atenção: Ao longo dos meses, ocorrem oscilações no volume de propostas, indicando...<a target="_blank" href="http://join.deathtothestockphoto.com/">Death to the Stock Photo</a>.</p>
+                    <h2>Visão Geral</h2>
+                    <p class="lead">A Câmara Municipal de Vereadores de Campina Grande é o órgão legislativo do Município, compondo-se de Vereadores eleitos nas condições e termos da legislação vigente (Art. 29, Inciso I da CF e Art. 31 da LOM).</p>
                 </div>
             </div>
             <!-- /.row -->
         </div>
         <!-- /.container -->
+    </section>
+    <!-- Ao longo do tempo -->
+    <section id="time" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Ao longo do tempo...</h2>
+                    <p class="lead">A câmara dos vereadores cria ementas em diversas áreas. Mas há algo que chama a atenção: Ao longo dos meses, ocorrem oscilações no volume de propostas, indicando...</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <streamchart></streamchart>
+                </div>
+            </div>
+        </div>
     </section>
     <!-- Services -->
     <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
@@ -146,13 +171,34 @@
         <div class="text-vertical-center">
             <!-- <h1>Hackfest Contra a Corrupção!</h1> -->
     </div>
-    </aside> -->
+    </aside>
+    <!-- Map -->
+    <section id="location" class="map">
+        <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Camara+dos+vereadores+Campina+Grande&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A&amp;output=embed"></iframe>
+        <br />
+        <small>
+            <a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A"></a>
+        </small>
+        </iframe>
+    </section>
+    <!-- Call to Action -->
+    <aside class="call-to-action bg-primary">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h3>The buttons below are impossible to resist.</h3>
+                    <a href="#" class="btn btn-lg btn-light">Click Me!</a>
+                    <a href="#" class="btn btn-lg btn-dark">Look at Me!</a>
+                </div>
+            </div>
+        </div>
+    </aside>
     <!-- Portfolio -->
-    <section id="portfolio" class="portfolio">
+    <section id="mais-projetos" class="portfolio">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
-                    <h2>Our Work</h2>
+                    <h2>Mais Projetos</h2>
                     <hr class="small">
                     <div class="row">
                         <div class="col-md-6">
@@ -193,29 +239,8 @@
         </div>
         <!-- /.container -->
     </section>
-    <!-- Call to Action -->
-    <aside class="call-to-action bg-primary">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h3>The buttons below are impossible to resist.</h3>
-                    <a href="#" class="btn btn-lg btn-light">Click Me!</a>
-                    <a href="#" class="btn btn-lg btn-dark">Look at Me!</a>
-                </div>
-            </div>
-        </div>
-    </aside>
-    <!-- Map -->
-    <section id="contact" class="map">
-        <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Camara+dos+vereadores+Campina+Grande&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A&amp;output=embed"></iframe>
-        <br />
-        <small>
-            <a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A"></a>
-        </small>
-        </iframe>
-    </section>
     <!-- Callout -->
-    <aside class="callout">
+    <aside id="sobre-hackfest" class="callout">
         <div class="text-vertical-center">
             <!-- <h1>Hackfest Contra a Corrupção!</h1> -->
         </div>
@@ -224,7 +249,7 @@
     <footer>
         <div class="container">
             <div class="row">
-                <div class="col-lg-10 col-lg-offset-1 text-center">
+                <!--                 <div class="col-lg-10 col-lg-offset-1 text-center">
                     <h4><strong>O que faz o Vereador</strong>
                     </h4>
                     <p>3481 Melrose Place
@@ -247,8 +272,8 @@
                         </li>
                     </ul>
                     <hr class="small">
-                    <!-- <p class="text-muted">Copyright &copy; Your Website 2014</p> -->
-                </div>
+                    <p class="text-muted">Copyright &copy; Your Website 2014</p>
+                </div> -->
             </div>
         </div>
         <a id="to-top" href="#top" class="btn btn-dark btn-lg"><i class="fa fa-chevron-up fa-fw fa-1x"></i></a>
@@ -257,6 +282,19 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Angular  -->
+    <script src="bower_components/angular/angular.min.js"></script>
+    <!-- D3.js -->
+    <script src="http://d3js.org/d3.v2.js"></script>
+    <!-- config -->
+    <script src="js/app.js"></script>
+    <script src="js/appconfig.js"></script>
+    <!-- Services -->
+    <script src="js/services/PropostaService.js"></script>
+    <!-- Controllers -->
+    <script src="js/controllers/MainController.js"></script>
+    <!-- Directives  -->
+    <script src="js/directives/streamchart.js"></script>
     <!-- Custom Theme JavaScript -->
     <script>
     // Closes the sidebar menu
@@ -270,20 +308,20 @@
         $("#sidebar-wrapper").toggleClass("active");
     });
     // Scrolls to the selected menu item on the page
-    // $(function() {
-    //     $('a[href*=#]:not([href=#],[data-toggle],[data-target],[data-slide])').click(function() {
-    //         if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
-    //             var target = $(this.hash);
-    //             target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-    //             if (target.length) {
-    //                 $('html,body').animate({
-    //                     scrollTop: target.offset().top
-    //                 }, 1000);
-    //                 return false;
-    //             }
-    //         }
-    //     });
-    // });
+    $(function() {
+        $('a.menu, btn').click(function() {
+            if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
+                var target = $(this.hash);
+                target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                if (target.length) {
+                    $('html,body').animate({
+                        scrollTop: target.offset().top
+                    }, 1000);
+                    return false;
+                }
+            }
+        });
+    });
     //#to-top button appears after scrolling
     var fixed = false;
     $(document).scroll(function() {
