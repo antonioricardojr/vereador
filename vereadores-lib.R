@@ -157,13 +157,14 @@ get_relevancia_ementas = function(db, ano){
 
     get_ementas_all(db) %>%
         filter(year(published_date) == ano) %>%
-        mutate(ascii_ementa_type = stri_trans_general(ementa_type, "LATIN-ASCII")) %>%
+        mutate(ascii_ementa_type = stri_trans_general(ementa_type, "LATIN-ASCII"),
+               ascii_main_theme = stri_trans_general(main_theme, "LATIN-ASCII")) %>%
         left_join(type_relevance_df, by = "ascii_ementa_type") %>%
         left_join(theme_relevance_df, by = "ascii_main_theme") %>%
         mutate(ementa_type_relevance = ifelse(is.na(ementa_type_relevance), 3, ementa_type_relevance),
                main_theme_relevance = ifelse(is.na(main_theme_relevance), 3, main_theme_relevance),
                ementa_relevance = ementa_type_relevance + main_theme_relevance) %>%
-        select(-c(ascii_ementa_type, ascii_main_theme))
+        select(-c(ascii_ementa_type, ascii_main_theme)) %>%
         return()
 
 }
