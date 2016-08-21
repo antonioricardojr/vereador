@@ -15,6 +15,7 @@
     <!-- Custom Fonts -->
     <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -22,6 +23,30 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
+<style>
+/*body { font: 10px sans-serif; }
+*/
+
+.chart {
+    background: #fff;
+}
+
+
+/*p { font: 12px helvetica; }
+*/
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
+    shape-rendering: crispEdges;
+}
+
+
+/*button { position: absolute; right: 50px; top: 10px; }
+*/
+</style>
 
 <body ng-controller="MainController">
     <!-- Navigation -->
@@ -80,13 +105,22 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2>Ao longo do tempo...</h2>
-                    <p class="lead">A câmara dos vereadores cria ementas em diversas áreas. Mas há algo que chama a atenção: Ao longo dos meses, ocorrem oscilações no volume de propostas, indicando...</p>
+                    <p class="lead">O gráfico abaixo é formado pelo número de propostas feitas pelos vereadores ao longo dos meses, onde as cores representam os temas propostos. </p>
                 </div>
             </div>
             <!-- /.row -->
         </div>
         <!-- /.container -->
     </section>
+    <!--     <section>
+        <div class="container">
+            <div class="row">
+                <select class="selectpicker" ng-init="selectedOption = options[0]" ng-model="selectedOption" ng-options="option.name for option in options">
+                </select>
+            </div>
+        </div>
+        </div>
+    </section> -->
     <section>
         <div class="container">
             <div class="row">
@@ -98,80 +132,78 @@
     </section>
     <!-- Services -->
     <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
-    <section id="services" class="services bg-primary">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-lg-10 col-lg-offset-1">
-                    <h2>Our Services</h2>
-                    <hr class="small">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+    <!-- <section id="services" class="services bg-primary">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-10 col-lg-offset-1">
+                <h2>Our Services</h2>
+                <hr class="small">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-cloud fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-compass fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-flask fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-shield fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
                     </div>
-                    <!-- /.row (nested) -->
                 </div>
-                <!-- /.col-lg-10 -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
-    </section>
+    </div>
+</section>
+ -->
     <!-- Callout -->
     <!-- <aside class="callout">
         <div class="text-vertical-center">
             <!-- <h1>Hackfest Contra a Corrupção!</h1> -->
-    </div>
-    </aside>
+    <!-- </div>
+</aside>
+ -->
     <!-- Map -->
     <section id="location" class="map">
         <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Camara+dos+vereadores+Campina+Grande&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A&amp;output=embed"></iframe>
@@ -182,7 +214,7 @@
         </iframe>
     </section>
     <!-- Call to Action -->
-    <aside class="call-to-action bg-primary">
+    <!-- <aside class="call-to-action bg-primary">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -192,9 +224,9 @@
                 </div>
             </div>
         </div>
-    </aside>
+    </aside> -->
     <!-- Portfolio -->
-    <section id="mais-projetos" class="portfolio">
+    <!--     <section id="mais-projetos" class="portfolio">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
@@ -230,15 +262,15 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /.row (nested) -->
+                    
                     <a href="#" class="btn btn-dark">View More Items</a>
                 </div>
-                <!-- /.col-lg-10 -->
+        
             </div>
-            <!-- /.row -->
+        
         </div>
-        <!-- /.container -->
-    </section>
+        
+    </section> -->
     <!-- Callout -->
     <aside id="sobre-hackfest" class="callout">
         <div class="text-vertical-center">
@@ -284,8 +316,11 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- Angular  -->
     <script src="bower_components/angular/angular.min.js"></script>
+    <!-- Bootstrap Select -->
+    <script src="bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="bower_components/bootstrap-select/dist/js/i18n/defaults-pt_BR.min.js"></script>
     <!-- D3.js -->
-    <script src="http://d3js.org/d3.v2.js"></script>
+    <script src="bower_components/d3/d3.v2.min.js"></script>
     <!-- config -->
     <script src="js/app.js"></script>
     <script src="js/appconfig.js"></script>

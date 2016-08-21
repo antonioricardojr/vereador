@@ -6,7 +6,7 @@ app.service( 'PropostaService', [ '$http', 'appconfig', function ( $http, appcon
     var self = this;
 
     self.url = appconfig.apiUrl;
-
+    console.log( self.url );
     self.loadPropostas = function ( ) {
         return $http.get( self.url );
     }
