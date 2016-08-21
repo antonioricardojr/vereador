@@ -65,3 +65,28 @@ get_vereador_ementas = function(nome = '', ano = 2012){
 
   return(ementas_vereador)
 }
+
+#* @get /vereadores/propostas/sumario
+get_vereador_sumario = function(nome, ano = 2012){
+  ano_eleicao = as.numeric(ano)
+  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano)
+  
+  if(NROW(ementas_vereador) == 0)
+    return(data.frame())
+  
+  sumario_situacao <- ementas_vereador %>%
+    count(situation) 
+  sumario_tipo = ementas_vereador %>%
+    count(ementa_type) 
+  sumario_tema = ementas_vereador %>%
+    count(main_theme) 
+  
+  return(list(
+    ementas_vereador$nome_candidato[1],
+    sumario_situacao,
+    sumario_tipo, 
+    sumario_tema
+  ))
+}
+
+

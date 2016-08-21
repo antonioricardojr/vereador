@@ -80,9 +80,17 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
 
 #Junção de vereador com ementas
 get_ementas_por_vereador_raw = function(db, nome, ano) {
-  ementas_por_vereador_raw <- tbl(db, 
-                                  sql(paste("SELECT * FROM consulta_cand v, ementas e 
-                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and (extract(year from e.published_date) = ", ano, ") and v.nome_candidato ilike '%", nome, "%' and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 10)||'%'", sep = "")))  %>%
+  ementas_por_vereador_raw <- tbl(db,
+                                  sql(
+                                    paste(
+                                      "SELECT * FROM consulta_cand v, ementas e
+                                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and v.ano_eleicao = ", ano,
+                                      " and v.nome_candidato ilike '%",
+                                      nome,
+                                      "%' and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 10)||'%'",
+                                      sep = ""
+                                      )
+                                    ))  %>%
     return()
 }
 
