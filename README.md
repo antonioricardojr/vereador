@@ -14,7 +14,7 @@ sudo apt-get -y install r-base
 Os pacotes que usamos: 
 
 ```
-R -e 'install.packages(c("dplyr", "RPostgreSQL", "lubridate", "jsonlite", "plumber", "futile.logger"), repos = "http://cran.rstudio.com/")'
+R -e 'install.packages(c("dplyr", "stringi", "RPostgreSQL", "lubridate", "jsonlite", "plumber", "futile.logger"), repos = "http://cran.rstudio.com/")'
 ```
 
 ## Rodando
