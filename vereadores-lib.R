@@ -55,14 +55,14 @@ get_vereadores_raw = function(db, id = NA, ano_eleicao = NA){
             return()
     }
     if(is.na(ano_eleicao)) {
-        tbl(db, sql(paste0("SELECT * FROM consulta_cand where sequencial_candidato = ", id))) %>%
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and sequencial_candidato = ", id))) %>%
             return()
     }
     if(is.na(id)) {
-        tbl(db, sql(paste0("SELECT * FROM consulta_cand where ano_eleicao = ", ano_eleicao))) %>%
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and ano_eleicao = ", ano_eleicao))) %>%
             return()
     } else{
-        tbl(db, sql(paste0("SELECT * FROM consulta_cand where sequencial_candidato = ",
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and sequencial_candidato = ",
                            id,
                            " and ano_eleicao = ",
                            ano_eleicao))) %>%
