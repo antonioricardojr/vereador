@@ -55,14 +55,14 @@ get_vereadores_raw = function(db, id = NA, ano_eleicao = NA){
             return()
     }
     if(is.na(ano_eleicao)) {
-        tbl(db, sql(paste0("SELECT * FROM consulta_cand where sequencial_candidato = ", id))) %>%
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and sequencial_candidato = ", id))) %>%
             return()
     }
     if(is.na(id)) {
-        tbl(db, sql(paste0("SELECT * FROM consulta_cand where ano_eleicao = ", ano_eleicao))) %>%
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and ano_eleicao = ", ano_eleicao))) %>%
             return()
     } else{
-        tbl(db, sql(paste0("SELECT * FROM consulta_cand where sequencial_candidato = ",
+        tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and sequencial_candidato = ",
                            id,
                            " and ano_eleicao = ",
                            ano_eleicao))) %>%
@@ -76,6 +76,22 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
         collect()
 
     return(vereadores_lista)
+}
+
+#Junção de vereador com ementas
+get_ementas_por_vereador_raw = function(db, nome) {
+  ementas_por_vereador_raw <- tbl(db, 
+                                  sql(paste("SELECT * FROM consulta_cand v, ementas e 
+                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and v.nome_candidato ilike '%", nome, "%' and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 15)||'%'", sep = "")))  %>%
+    return()
+}
+
+#Busca de ementas por nome de vereador
+get_ementas_por_vereador = function(db, nome) {
+  ementas_por_vereador <- get_ementas_por_vereador_raw(db, nome) %>%
+    collect()
+  
+  return(ementas_por_vereador)
 }
 
 # Funcao de relevancia das ementas (proof of concept)

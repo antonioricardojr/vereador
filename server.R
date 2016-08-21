@@ -35,3 +35,19 @@ get_vereador_id = function(id = NA, ano_eleicao = 2012){
     vereador = get_vereadores(camara_db, id, ano_eleicao)
     return(vereador)
 }
+
+#* @get /vereadores/propostas
+get_vereador_ementas = function(nome){
+  if(is.null(nome)){
+    stop("Informe o nome do vereador: /vereadores/ementas?nome=xuxa")
+  }
+  
+  ementas_vereador <- get_ementas_por_vereador(camara_db, nome)
+  
+  if (NROW(ementas_vereador) != 0) {
+    ementas_vereador <- ementas_vereador %>%
+      select(sequencial_candidato, nome_candidato, document_number, process_number, ementa_type, published_date, approval_date, title, source, proponents, situation, main_theme)
+  }
+  
+  return(ementas_vereador)
+}
