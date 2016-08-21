@@ -1,7 +1,6 @@
 library(dplyr, warn.conflicts = F)
 library(RPostgreSQL)
 library(lubridate, warn.conflicts = F)
-library(jsonlite)
 source("vereadores-lib.R")
 
 camara_db <- start_camaraDB()
