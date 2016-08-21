@@ -80,9 +80,15 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
 
 # Funcao de relevancia das ementas (proof of concept)
 get_relevancia_ementas = function(db){
-    type_relevance <- c(1, 1, 2, 2, 3, 4, 5)
-    ementa_types <- c("DECRETO", "PEDIDO DE INFORMAÇÃO", "INDICAÇÃO", "REQUERIMENTO", "PROJETO DE LEI ORDINÁRIA",
-                      "PROJETO DE LEI COMPLEMENTAR", "PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO")
+    type_relevance <- c(1, 1, 1, 2, 2, 3, 4, 5)
+    ementa_types <- c("DECRETO",
+                      "PROJETO DE RESOLUÇÃO",
+                      "PEDIDO DE INFORMAÇÃO",
+                      "INDICAÇÃO",
+                      "REQUERIMENTO",
+                      "PROJETO DE LEI ORDINÁRIA",
+                      "PROJETO DE LEI COMPLEMENTAR",
+                      "PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO")
     type_relevance_df <- data_frame(ementa_type = ementa_types,
                                     ementa_type_relevance = type_relevance)
 
