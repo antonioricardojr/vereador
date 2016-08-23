@@ -97,8 +97,14 @@ get_ementas_por_vereador_raw = function(db, nome, ano) {
 #Junção de vereador com ementas, exibir todas as propostas
 get_propostas_todos_vereador_raw = function(db, ano) {
   propostas_por_vereador_raw <- tbl(db,
-                                  sql(paste("SELECT * FROM consulta_cand v, ementas e
-                      WHERE v.descricao_ue = 'CAMPINA GRANDE' and (extract(year from e.published_date) = ", ano, ") and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 10)||'%'", sep = "")))  %>%
+                                    sql(
+                                      paste(
+                                        "SELECT * FROM consulta_cand v, ementas e
+                                        WHERE v.descricao_ue = 'CAMPINA GRANDE' and v.ano_eleicao = ", ano, 
+                                        " and e.proponents ilike '%'||substring(v.nome_candidato from 1 for 10)||'%'", 
+                                        sep = ""
+                                      )
+                                      ))  %>%
     return()
 }
 
@@ -175,6 +181,11 @@ get_relevancia_ementas = function(db, ano){
         select(-c(ascii_ementa_type, ascii_main_theme)) %>%
         return()
 
+}
+
+get_relevancia_vereadores = function(db, ano_eleicao) {
+  # Fazer a soma da relevância das propostas dos vereadores de uma legislatura.
+  return(data.frame())
 }
 
 sumariza_no_tempo = function(ementas, count_by, period = "published_month"){
