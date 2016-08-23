@@ -98,3 +98,11 @@ get_relevacia_propostas = function(ano = 2012){
 
   return(relevancia_propostas)
 }
+
+#* @get /relevancia/vereadores
+get_relevacia_vereadores = function(ano_eleicao = 2012){
+  
+  relevancia_vereadores <- get_relevancia_vereadores(camara_db, ano_eleicao)
+  
+  return(relevancia_vereadores)
+}
