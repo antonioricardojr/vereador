@@ -1,0 +1,151 @@
+---
+title: "Algumas observações"
+author: "Nazareno"
+output:
+  html_document:
+    theme: yeti
+    toc: true
+    toc_float: true
+    fig_width: 5
+    fig_height: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stringi, warn.conflicts = F)
+library(ggplot2)
+library(RPostgreSQL)
+library(plotly, warn.conflicts = F)
+library(lubridate, warn.conflicts = F)
+library(dplyr, warn.conflicts = F)
+source("vereadores-lib.R")
+
+camara_db <- start_camaraDB()
+```
+
+## Alguns vereadores 
+
+```{r echo=FALSE, fig.width=8, fig.height=6}
+ano_eleicao = 2012
+
+pega_ementas_vereador <- function(vereador){
+  get_ementas_por_vereador(camara_db, vereador, ano_eleicao) %>% 
+  mutate(situation = ifelse(
+                situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
+                "ARQUIVADO/REJEITADO/RETIRADO",
+                ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+            ))
+}
+
+
+vereadores = c("olimpio", 
+               "rodrigo ramos", 
+               "nelson gomes",
+               "alexandre pereira",
+               "napoleão")
+ementas = pega_ementas_vereador(vereadores[1])
+for (vereador in vereadores[2:NROW(vereadores)]) {
+  ementas_vereador = pega_ementas_vereador(vereador)  
+  ementas = rbind(ementas, ementas_vereador)
+}
+
+sumario_situacao = ementas %>% dplyr::count(nome_candidato, situation)
+
+theme_set(theme_bw())
+
+p = sumario_situacao %>% 
+  ggplot() + 
+  geom_bar(aes(x = reorder(nome_candidato, n), y = n, fill = situation), stat = "identity") + 
+  xlab("") + 
+  scale_fill_brewer(type = "qual") + 
+  coord_flip()  
+
+ggplotly(p)
+
+```
+
+## Retirando requerimentos
+
+```{r echo=FALSE, fig.width=8, fig.height=6}
+sumario_situacao = ementas %>% 
+  filter(!(ementa_type %in% c("REQUERIMENTO", "PEDIDO DE INFORMAÇÃO"))) %>% 
+  dplyr::count(nome_candidato, situation)
+
+p = sumario_situacao %>% 
+  ggplot() + 
+  geom_bar(aes(x = reorder(nome_candidato, n), y = n, fill = situation), stat = "identity") + 
+  xlab("") + 
+  scale_fill_brewer(type = "qual") + 
+  coord_flip()  
+
+ggplotly(p)
+
+```
+
+
+## Temas
+
+```{r echo=FALSE, fig.height=12, fig.width=8}
+sumario_tema = ementas %>% count(nome_candidato, main_theme)
+
+p = ggplot(sumario_tema, 
+           mapping = aes(x = nome_candidato, 
+                         y = reorder(main_theme, n), 
+                         colour = main_theme,
+                         size = n / 80)) + 
+  geom_point(alpha = 0.7) + 
+  ylab("") +
+  xlab("") + 
+  theme(axis.text.x  = element_text(angle=90), legend.position="none")
+ggplotly(p)
+
+```
+
+## PCA
+
+Considerando requerimentos. Considerar atividade absoluta ou proporções?
+
+```{r}
+library(tidyr)
+library(ggbiplot)
+library(ggfortify)
+library(knitr)
+
+# temas em formato wide e proporção de atividade
+temas_wide = sumario_tema %>% 
+  group_by(nome_candidato) %>% 
+  mutate(n = n / sum(n)) %>% 
+  ungroup() %>% 
+  spread(main_theme, n, fill = 0)
+
+# necessário para os métodos de visualização de PCA
+row.names(temas_wide) = temas_wide$nome_candidato
+
+# PCA
+temas_pca = temas_wide %>% 
+  select(-nome_candidato) %>%
+  prcomp(scale = TRUE)
+
+kable(temas_pca$rotation)
+
+autoplot(temas_pca, label = TRUE, label.size = 3, shape = FALSE)
+
+autoplot(temas_pca, label = TRUE, label.size = 3, shape = FALSE, 
+         loadings = TRUE, loadings.colour = 'blue',
+         loadings.label = TRUE, loadings.label.size = 3)
+
+# Porcentagem da variância explicada: 
+plot_pve <- function(prout){
+  pr.var <- temas_pca$sdev^2
+  pve <- pr.var / sum(pr.var)
+  df = data.frame(x = 1:NROW(pve), y = cumsum(pve))
+  ggplot(df, aes(x = x, y = y)) + 
+    geom_point(size = 3) + 
+    geom_line() + 
+    labs(x='Principal Component', y = 'Cumuative Proportion of Variance Explained')
+}
+
+plot_pve(temas_pca)
+
+```
+
