@@ -108,9 +108,10 @@ get_propostas_todos_vereador_raw = function(db, ano) {
     return()
 }
 
-#Busca de ementas por nome de vereador
-get_ementas_por_vereador = function(db, nome, ano) {
-  if (nome != '') {
+get_ementas_por_vereador = function(db, nome = NA, ano) {
+  #' Retorna as ementas cuja lista de proponentes inclui um dado nome. 
+  #' Ao especificar '' ou NA, todas as ementas são retornadas. 
+  if (!is.na(nome) & nome != '') {
     propostas <- get_ementas_por_vereador_raw(db, nome, ano) %>%
                  collect()
   } else {
@@ -135,80 +136,85 @@ get_ementas_por_vereador = function(db, nome, ano) {
 
 # Tipos de ementas desconsideradas: LEI COMPLEMENTAR, LEI ORDINÁRIA, EM IMPLANTAÇÃO
 
-# Funcao de relevancia das ementas (proof of concept)
 get_relevancia_ementas = function(db, ano){
-    type_relevance <- c(1, 1, 1, 1, 2, 2, 3, 4, 5)
-    ementa_types <- c("DECRETO",
-                      "PROJETO DE DECRETO LEGISLATIVO",
-                      "PROJETO DE RESOLUÇÃO",
-                      "PEDIDO DE INFORMAÇÃO",
-                      "INDICAÇÃO",
-                      "REQUERIMENTO",
-                      "PROJETO DE LEI ORDINÁRIA",
-                      "PROJETO DE LEI COMPLEMENTAR",
-                      "PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO")
-    type_relevance_df <- data_frame(ascii_ementa_type = stri_trans_general(ementa_types, "LATIN-ASCII"),
-                                    ementa_type_relevance = type_relevance)
-
-    themes_relevance_1 <- c("CONGRATULAÇÕES", "VOTO DE APLAUSO", "MEDALHA DE HONRA AO MÉRITO",
-                            "DENOMINAÇÃO DE RUA", "DAR NOME A PRÓPRIO PÚBLICO", "DENOMINAÇÃO DE CRECHE",
-                            "DENOMINAÇAO DE ESCOLA")
-    themes_relevance_2 <- c("DIA MUNICIPAL", "FERIADOS", "MOÇÃO")
-    themes_relevance_3 <- c()
-    themes_relevance_4 <- c("SESSÃO ESPECIAL")
-    themes_relevance_5 <- c("ALTERAÇÂO DE LEI", "CÓDIGO TRIBUTÁRIO MUNICIPAL")
-
-    theme_relevance_df <- data_frame(ascii_main_theme = stri_trans_general(c(themes_relevance_1,
-                                                                             themes_relevance_2,
-                                                                             themes_relevance_3,
-                                                                             themes_relevance_4,
-                                                                             themes_relevance_5), "LATIN-ASCII"),
-                                     main_theme_relevance = c(rep(1, length(themes_relevance_1)),
-                                                              rep(2, length(themes_relevance_2)),
-                                                              rep(3, length(themes_relevance_3)),
-                                                              rep(4, length(themes_relevance_4)),
-                                                              rep(5, length(themes_relevance_5))))
-
-    get_ementas_all(db) %>%
-        filter(year(published_date) == ano) %>%
-        mutate(ascii_ementa_type = stri_trans_general(ementa_type, "LATIN-ASCII"),
-               ascii_main_theme = stri_trans_general(main_theme, "LATIN-ASCII")) %>%
-        left_join(type_relevance_df, by = "ascii_ementa_type") %>%
-        left_join(theme_relevance_df, by = "ascii_main_theme") %>%
-        mutate(ementa_type_relevance = ifelse(is.na(ementa_type_relevance), 3, ementa_type_relevance),
-               main_theme_relevance = ifelse(is.na(main_theme_relevance), 3, main_theme_relevance),
-               ementa_relevance = ementa_type_relevance + main_theme_relevance) %>%
-        select(-c(ascii_ementa_type, ascii_main_theme)) %>%
-        return()
-
+  #' Retorna todas as ementas do BD junto com uma relevância calculada em 
+  #' função do tipo de ementa.
+  #' TODO Descrever a lógica das relevância
+  type_relevance <- c(1, 1, 1, 1, 2, 2, 3, 4, 5)
+  ementa_types <- c("DECRETO",
+                    "PROJETO DE DECRETO LEGISLATIVO",
+                    "PROJETO DE RESOLUÇÃO",
+                    "PEDIDO DE INFORMAÇÃO",
+                    "INDICAÇÃO",
+                    "REQUERIMENTO",
+                    "PROJETO DE LEI ORDINÁRIA",
+                    "PROJETO DE LEI COMPLEMENTAR",
+                    "PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO")
+  type_relevance_df <- data_frame(ascii_ementa_type = stri_trans_general(ementa_types, "LATIN-ASCII"),
+                                  ementa_type_relevance = type_relevance)
+  
+  themes_relevance_1 <- c("CONGRATULAÇÕES", "VOTO DE APLAUSO", "MEDALHA DE HONRA AO MÉRITO",
+                          "DENOMINAÇÃO DE RUA", "DAR NOME A PRÓPRIO PÚBLICO", "DENOMINAÇÃO DE CRECHE",
+                          "DENOMINAÇAO DE ESCOLA")
+  themes_relevance_2 <- c("DIA MUNICIPAL", "FERIADOS", "MOÇÃO")
+  themes_relevance_3 <- c()
+  themes_relevance_4 <- c("SESSÃO ESPECIAL")
+  themes_relevance_5 <- c("ALTERAÇÂO DE LEI", "CÓDIGO TRIBUTÁRIO MUNICIPAL")
+  
+  theme_relevance_df <- data_frame(ascii_main_theme = stri_trans_general(c(themes_relevance_1,
+                                                                           themes_relevance_2,
+                                                                           themes_relevance_3,
+                                                                           themes_relevance_4,
+                                                                           themes_relevance_5), "LATIN-ASCII"),
+                                   main_theme_relevance = c(rep(1, length(themes_relevance_1)),
+                                                            rep(2, length(themes_relevance_2)),
+                                                            rep(3, length(themes_relevance_3)),
+                                                            rep(4, length(themes_relevance_4)),
+                                                            rep(5, length(themes_relevance_5))))
+  
+  get_ementas_all(db) %>%
+    filter(year(published_date) == ano) %>%
+    mutate(ascii_ementa_type = stri_trans_general(ementa_type, "LATIN-ASCII"),
+           ascii_main_theme = stri_trans_general(main_theme, "LATIN-ASCII")) %>%
+    left_join(type_relevance_df, by = "ascii_ementa_type") %>%
+    left_join(theme_relevance_df, by = "ascii_main_theme") %>%
+    mutate(ementa_type_relevance = ifelse(is.na(ementa_type_relevance), 3, ementa_type_relevance),
+           main_theme_relevance = ifelse(is.na(main_theme_relevance), 3, main_theme_relevance),
+           ementa_relevance = ementa_type_relevance + main_theme_relevance) %>%
+    select(-c(ascii_ementa_type, ascii_main_theme)) %>%
+    return()
 }
 
-get_relevancia_vereadores = function(db, ano_eleicao) {
-  # Fazer a soma da relevância das propostas dos vereadores de uma legislatura.
-  return(data.frame())
-}
-
-sumariza_no_tempo = function(ementas, count_by, period = "published_month"){
-    theme_count_m <- ementas %>%
-        select_(count_by, "published_date", period) %>%
-        filter(year(published_date) >= 2013) %>%
-        group_by_(period) %>%
-        count_(count_by) %>%
-        ungroup() %>%
-        rename_(time = period, count = "n") %>%
-        arrange(time)
-
-    # Adiciona zeros para as combinações de data
-    # e count_by que não existem
-    times = unique((do.call(c, theme_count_m[, "time"]))) # unlist mata as datas
-    x2 = unique(unlist(theme_count_m[, count_by]))
-    answer <-
-        left_join(
-            expand.grid(times, x2,
-                        stringsAsFactors = F),
-            theme_count_m,
-            by = c("Var1" = "time", "Var2" = count_by)) %>%
-        mutate(count = ifelse(is.na(count), 0, count))
-    names(answer) = c("time", count_by, "count")
-    return(answer)
+sumariza_no_tempo = function(ementas,
+                             count_by,
+                             period = "published_month",
+                             not_older_than = 2013) {
+  #' Conta a quantidade de ementas em um df derivado de get_ementas.
+  #' A contagem é pela categoria especificada em `count_by`, acontece
+  #' para cada nível da coluna `period` e o resultado tem
+  #' zeros para as combinações de count_by e period que não acontecem no
+  #' df original.
+  theme_count_m <- ementas %>%
+    select_(count_by, "published_date", period) %>%
+    filter(year(published_date) >= not_older_than) %>%
+    group_by_(period) %>%
+    count_(count_by) %>%
+    ungroup() %>%
+    rename_(time = period, count = "n") %>%
+    arrange(time)
+  
+  # Adiciona zeros para as combinações de data
+  # e count_by que não existem
+  times = unique((do.call(c, theme_count_m[, "time"]))) # unlist mata as datas
+  x2 = unique(unlist(theme_count_m[, count_by]))
+  answer <-
+    left_join(
+      expand.grid(times, x2,
+                  stringsAsFactors = F),
+      theme_count_m,
+      by = c("Var1" = "time", "Var2" = count_by)
+    ) %>%
+    mutate(count = ifelse(is.na(count), 0, count))
+  names(answer) = c("time", count_by, "count")
+  return(answer)
 }
