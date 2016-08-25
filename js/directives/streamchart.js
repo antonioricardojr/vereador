@@ -111,13 +111,12 @@ app.directive( 'streamchart', [ function ( ) {
                 .append( "g" )
                 .attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
-            var graph = d3.json( "graficos_fora/teste.json", function ( data ) {
+            var graph = d3.json( "data/ementas.json", function ( data ) {
                 data.forEach( function ( d ) {
                     d.date = format.parse( d.time );
                     d.value = +d.count;
                 } );
 
-                console.log( scope.data );
 
                 // var graph = d3.json( scope.data, function ( data ) {
                 //     data.forEach( function ( d ) {
@@ -194,7 +193,7 @@ app.directive( 'streamchart', [ function ( ) {
                         pro = d.values[ mousedate ].value;
 
                         date = d.values[ mousedate ].date;
-                        console.log( date );
+                        // console.log( date );
 
                         d3.select( this )
                             .classed( "hover", true )

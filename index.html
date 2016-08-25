@@ -16,6 +16,7 @@
     <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="css/streamchart.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -23,39 +24,15 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<style>
-/*body { font: 10px sans-serif; }
-*/
 
-.chart {
-    background: #fff;
-}
-
-
-/*p { font: 12px helvetica; }
-*/
-
-.axis path,
-.axis line {
-    fill: none;
-    stroke: #000;
-    stroke-width: 2px;
-    shape-rendering: crispEdges;
-}
-
-
-/*button { position: absolute; right: 50px; top: 10px; }
-*/
-</style>
-
-<body ng-controller="MainController">
+<body ng-controller="MainController as ctrl">
     <!-- Navigation -->
     <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
     <nav id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
             <li class="sidebar-brand">
-                <a class="menu" href="#top" onclick='$( "#menu-close").click();'>{{ title }}</a>
+                <a class="menu" href="#top" onclick='$( "#menu-close").click();'>{{ ctrl.title }}</a>
             </li>
             <li>
                 <a class="menu" href="#about" onclick='$( "#menu-close").click();'>Visão Geral</a>
@@ -64,13 +41,10 @@
                 <a class="menu" href="#time" onclick='$( "#menu-close").click()' ;>Ao longo do tempo</a>
             </li>
             <li>
-                <a class="menu" href="#services" onclick='$( "#menu-close").click();'>Services</a>
+                <a class="menu" href="#propostas" onclick='$( "#menu-close").click();'>Propostas</a>
             </li>
             <li>
                 <a class="menu" href="#location" onclick='$( "#menu-close").click();'>Onde ficam</a>
-            </li>
-            <li>
-                <a class="menu" href="#mais-projetos" onclick='$( "#menu-close").click();'>Mais Projetos</a>
             </li>
             <li>
                 <a class="menu" href="#sobre-hackfest" onclick='$( "#menu-close").click();'>Sobre o Hackfest</a>
@@ -80,14 +54,14 @@
     <!-- Header -->
     <header id="top" class="header">
         <div class="text-vertical-center" style="background: rgba(255,255,255,0.5);">
-            <h1>{{title}}</h1>
-            <h2>{{ subtitle }}</h2>
+            <h1>{{ctrl.title}}</h1>
+            <h2>{{ ctrl.subtitle }}</h2>
             <br>
             <a href="#about" class="btn btn-dark btn-lg">Saiba mais</a>
         </div>
     </header>
     <!-- About -->
-    <section id="about" class="about">
+    <aside id="about" class="call-to-action bg-primary about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -95,37 +69,53 @@
                     <p class="lead">A Câmara Municipal de Vereadores de Campina Grande é o órgão legislativo do Município, compondo-se de Vereadores eleitos nas condições e termos da legislação vigente (Art. 29, Inciso I da CF e Art. 31 da LOM).</p>
                 </div>
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
-    </section>
+    </aside>
     <!-- Ao longo do tempo -->
     <section id="time" class="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2>Ao longo do tempo...</h2>
-                    <p class="lead">O gráfico abaixo é formado pelo número de propostas feitas pelos vereadores ao longo dos meses, onde as cores representam os temas propostos. </p>
+                    <p class="lead">O gráfico abaixo é formado pelo número de propostas feitas pelos vereadores ao longo dos meses, onde as cores representam os temas propostos. É possível filtrar as propostas por Tema, Tipo, Situação e Relevância.</p>
                 </div>
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
     </section>
-    <!--     <section>
+    <section>
         <div class="container">
             <div class="row">
-                <select class="selectpicker" ng-init="selectedOption = options[0]" ng-model="selectedOption" ng-options="option.name for option in options">
+                <select class="selectpicker" ng-init="selectedOption = ctrl.options[0]" ng-model="selectedOption" ng-options="option.name for option in ctrl.options">
                 </select>
             </div>
         </div>
         </div>
-    </section> -->
+    </section>
     <section>
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <streamchart></streamchart>
+                    <streamchart class="streamchart"></streamchart>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="propostas" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Propostas</h2>
+                    <p class="lead">O gráfico a seguir diz respeito ao número de propostas deliberadas semanalmente pelos vereadores. Os círculos demarcam o número de propostas aprovadas. </p>
+                    <p class="lead">Essas propostas dizem respeito a alteração da lei orgânica municipal, projetos de lei, decretos legislativos, resoluções e outras matérias de interesse do município.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <radialchart></radialchart>
                 </div>
             </div>
         </div>
@@ -320,16 +310,18 @@
     <script src="bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <script src="bower_components/bootstrap-select/dist/js/i18n/defaults-pt_BR.min.js"></script>
     <!-- D3.js -->
-    <script src="bower_components/d3/d3.v2.min.js"></script>
+    <!-- <script src="bower_components/d3/d3.v2.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <!-- config -->
     <script src="js/app.js"></script>
     <script src="js/appconfig.js"></script>
     <!-- Services -->
-    <script src="js/services/PropostaService.js"></script>
+    <script src="js/services/EmentaService.js"></script>
     <!-- Controllers -->
     <script src="js/controllers/MainController.js"></script>
     <!-- Directives  -->
     <script src="js/directives/streamchart.js"></script>
+    <script src="js/directives/radialchart.js"></script>
     <!-- Custom Theme JavaScript -->
     <script>
     // Closes the sidebar menu
