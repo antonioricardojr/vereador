@@ -1,1 +1,3 @@
+*.RData
+*.Rhistory
 bower_components
