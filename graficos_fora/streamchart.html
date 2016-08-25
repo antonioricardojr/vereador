@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
 <style>
 /*body { font: 10px sans-serif; }
 */
@@ -28,7 +26,6 @@ button {
 </style>
 
 <body>
-    <script src="http://d3js.org/d3.v2.js"></script>
     <div class="chart">
     </div>
     <script>
@@ -205,6 +202,7 @@ button {
 
                     mousedate = datearray.indexOf(invertedx);
                     pro = d.values[mousedate].value;
+                    console.log(pro);
 
                     d3.select(this)
                         .classed("hover", true)

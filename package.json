@@ -1,0 +1,19 @@
+{
+  "name": "vereador",
+  "version": "1.0.0",
+  "description": "Hackfest Contra a Corrupção, Campina Grande-PB 20 de agosto de 2016",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antonioricardojr/vereador.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antonioricardojr/vereador/issues"
+  },
+  "homepage": "https://github.com/antonioricardojr/vereador"
+}

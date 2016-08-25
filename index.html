@@ -12,9 +12,12 @@
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="css/stylish-portfolio.css" rel="stylesheet">
+    <link href="css/custom-stylish-portfolio.css" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="css/streamchart.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -23,14 +26,14 @@
     <![endif]-->
 </head>
 
-<body ng-controller="MainController">
+<body ng-controller="MainController as ctrl">
     <!-- Navigation -->
     <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
     <nav id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
             <li class="sidebar-brand">
-                <a class="menu" href="#top" onclick='$( "#menu-close").click();'>{{ title }}</a>
+                <a class="menu" href="#top" onclick='$( "#menu-close").click();'>{{ ctrl.title }}</a>
             </li>
             <li>
                 <a class="menu" href="#about" onclick='$( "#menu-close").click();'>Visão Geral</a>
@@ -39,13 +42,10 @@
                 <a class="menu" href="#time" onclick='$( "#menu-close").click()' ;>Ao longo do tempo</a>
             </li>
             <li>
-                <a class="menu" href="#services" onclick='$( "#menu-close").click();'>Services</a>
+                <a class="menu" href="#propostas" onclick='$( "#menu-close").click();'>Propostas</a>
             </li>
             <li>
                 <a class="menu" href="#location" onclick='$( "#menu-close").click();'>Onde ficam</a>
-            </li>
-            <li>
-                <a class="menu" href="#mais-projetos" onclick='$( "#menu-close").click();'>Mais Projetos</a>
             </li>
             <li>
                 <a class="menu" href="#sobre-hackfest" onclick='$( "#menu-close").click();'>Sobre o Hackfest</a>
@@ -54,15 +54,15 @@
     </nav>
     <!-- Header -->
     <header id="top" class="header">
-        <div class="text-vertical-center" style="background: rgba(255,255,255,0.5);">
-            <h1>{{title}}</h1>
-            <h2>{{ subtitle }}</h2>
+        <div class="text-vertical-center" style="">
+            <h1>{{ctrl.title}}</h1>
+            <h2>{{ ctrl.subtitle }}</h2>
             <br>
             <a href="#about" class="btn btn-dark btn-lg">Saiba mais</a>
         </div>
     </header>
     <!-- About -->
-    <section id="about" class="about">
+    <aside id="about" class="call-to-action bg-primary about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -70,108 +70,131 @@
                     <p class="lead">A Câmara Municipal de Vereadores de Campina Grande é o órgão legislativo do Município, compondo-se de Vereadores eleitos nas condições e termos da legislação vigente (Art. 29, Inciso I da CF e Art. 31 da LOM).</p>
                 </div>
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
-    </section>
+    </aside>
     <!-- Ao longo do tempo -->
     <section id="time" class="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2>Ao longo do tempo...</h2>
-                    <p class="lead">A câmara dos vereadores cria ementas em diversas áreas. Mas há algo que chama a atenção: Ao longo dos meses, ocorrem oscilações no volume de propostas, indicando...</p>
+                    <p class="lead">O gráfico abaixo é formado pelo número de propostas feitas pelos vereadores ao longo dos meses, onde as cores representam os temas propostos. É possível filtrar as propostas por Tema, Tipo, Situação e Relevância.</p>
                 </div>
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <select class="selectpicker" ng-init="selectedOption = ctrl.options[0]" ng-model="selectedOption" ng-options="option.name for option in ctrl.options">
+                </select>
+            </div>
+        </div>
+        </div>
     </section>
     <section>
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <streamchart></streamchart>
+                    <streamchart class="streamchart"></streamchart>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="propostas" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Propostas</h2>
+                    <p class="lead">O gráfico a seguir diz respeito ao número de propostas deliberadas semanalmente pelos vereadores. Os círculos demarcam o número de propostas aprovadas. </p>
+                    <p class="lead">Essas propostas dizem respeito a alteração da lei orgânica municipal, projetos de lei, decretos legislativos, resoluções e outras matérias de interesse do município.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <radialchart></radialchart>
                 </div>
             </div>
         </div>
     </section>
     <!-- Services -->
     <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
-    <section id="services" class="services bg-primary">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-lg-10 col-lg-offset-1">
-                    <h2>Our Services</h2>
-                    <hr class="small">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+    <!-- <section id="services" class="services bg-primary">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-10 col-lg-offset-1">
+                <h2>Our Services</h2>
+                <hr class="small">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-cloud fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-compass fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-flask fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="service-item">
+                            <span class="fa-stack fa-4x">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-shield fa-stack-1x text-primary"></i>
                             </span>
-                                <h4>
+                            <h4>
                                     <strong>Service Name</strong>
                                 </h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                <a href="#" class="btn btn-light">Learn More</a>
-                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <a href="#" class="btn btn-light">Learn More</a>
                         </div>
                     </div>
-                    <!-- /.row (nested) -->
                 </div>
-                <!-- /.col-lg-10 -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container -->
-    </section>
+    </div>
+</section>
+ -->
     <!-- Callout -->
     <!-- <aside class="callout">
         <div class="text-vertical-center">
             <!-- <h1>Hackfest Contra a Corrupção!</h1> -->
-    </div>
-    </aside>
+    <!-- </div>
+</aside>
+ -->
     <!-- Map -->
     <section id="location" class="map">
         <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Camara+dos+vereadores+Campina+Grande&amp;aq=0&amp;oq=twitter&amp;sll=28.659344,-81.187888&amp;sspn=0.128789,0.264187&amp;ie=UTF8&amp;hq=Twitter,+Inc.,+Market+Street,+San+Francisco,+CA&amp;t=m&amp;z=15&amp;iwloc=A&amp;output=embed"></iframe>
@@ -182,7 +205,7 @@
         </iframe>
     </section>
     <!-- Call to Action -->
-    <aside class="call-to-action bg-primary">
+    <!-- <aside class="call-to-action bg-primary">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -192,9 +215,9 @@
                 </div>
             </div>
         </div>
-    </aside>
+    </aside> -->
     <!-- Portfolio -->
-    <section id="mais-projetos" class="portfolio">
+    <!--     <section id="mais-projetos" class="portfolio">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1 text-center">
@@ -230,15 +253,15 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /.row (nested) -->
+                    
                     <a href="#" class="btn btn-dark">View More Items</a>
                 </div>
-                <!-- /.col-lg-10 -->
+        
             </div>
-            <!-- /.row -->
+        
         </div>
-        <!-- /.container -->
-    </section>
+        
+    </section> -->
     <!-- Callout -->
     <aside id="sobre-hackfest" class="callout">
         <div class="text-vertical-center">
@@ -284,90 +307,24 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- Angular  -->
     <script src="bower_components/angular/angular.min.js"></script>
+    <!-- Bootstrap Select -->
+    <script src="bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="bower_components/bootstrap-select/dist/js/i18n/defaults-pt_BR.min.js"></script>
     <!-- D3.js -->
-    <script src="http://d3js.org/d3.v2.js"></script>
+    <!-- <script src="bower_components/d3/d3.v2.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <!-- config -->
     <script src="js/app.js"></script>
     <script src="js/appconfig.js"></script>
     <!-- Services -->
-    <script src="js/services/PropostaService.js"></script>
+    <script src="js/services/EmentaService.js"></script>
     <!-- Controllers -->
     <script src="js/controllers/MainController.js"></script>
     <!-- Directives  -->
     <script src="js/directives/streamchart.js"></script>
+    <script src="js/directives/radialchart.js"></script>
     <!-- Custom Theme JavaScript -->
-    <script>
-    // Closes the sidebar menu
-    $("#menu-close").click(function(e) {
-        e.preventDefault();
-        $("#sidebar-wrapper").toggleClass("active");
-    });
-    // Opens the sidebar menu
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#sidebar-wrapper").toggleClass("active");
-    });
-    // Scrolls to the selected menu item on the page
-    $(function() {
-        $('a.menu, btn').click(function() {
-            if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
-                var target = $(this.hash);
-                target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-                if (target.length) {
-                    $('html,body').animate({
-                        scrollTop: target.offset().top
-                    }, 1000);
-                    return false;
-                }
-            }
-        });
-    });
-    //#to-top button appears after scrolling
-    var fixed = false;
-    $(document).scroll(function() {
-        if ($(this).scrollTop() > 250) {
-            if (!fixed) {
-                fixed = true;
-                // $('#to-top').css({position:'fixed', display:'block'});
-                $('#to-top').show("slow", function() {
-                    $('#to-top').css({
-                        position: 'fixed',
-                        display: 'block'
-                    });
-                });
-            }
-        } else {
-            if (fixed) {
-                fixed = false;
-                $('#to-top').hide("slow", function() {
-                    $('#to-top').css({
-                        display: 'none'
-                    });
-                });
-            }
-        }
-    });
-    // Disable Google Maps scrolling
-    // See http://stackoverflow.com/a/25904582/1607849
-    // Disable scroll zooming and bind back the click event
-    var onMapMouseleaveHandler = function(event) {
-        var that = $(this);
-        that.on('click', onMapClickHandler);
-        that.off('mouseleave', onMapMouseleaveHandler);
-        that.find('iframe').css("pointer-events", "none");
-    }
-    var onMapClickHandler = function(event) {
-            var that = $(this);
-            // Disable the click handler until the user leaves the map area
-            that.off('click', onMapClickHandler);
-            // Enable scrolling zoom
-            that.find('iframe').css("pointer-events", "auto");
-            // Handle the mouse leave event
-            that.on('mouseleave', onMapMouseleaveHandler);
-        }
-        // Enable map zooming with mouse scroll when the user clicks the map
-    $('.map').on('click', onMapClickHandler);
-    </script>
+    <script src="js/stylish-portfolio.js"></script>
 </body>
 
 </html>

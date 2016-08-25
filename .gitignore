@@ -1,6 +1,10 @@
+*.RData
+*.Rhistory
 *Rproj
 rsconnect
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+bower_components
