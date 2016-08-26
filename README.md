@@ -29,8 +29,6 @@ Para rodar o projeto localmente, tenha instalado em sua máquina os seguintes it
 
 * npm
 
-- Linux: 
-
 ```
 sudo apt-get install -y npm
 ```
@@ -39,12 +37,6 @@ sudo apt-get install -y npm
 
 ```
 sudo npm install bower -g
-```
-
-* grunt
-
-```
-sudo npm install -g grunt-cli
 ```
 
 Para instalar as dependências, acesse o diretório do projeto e execute os comandos:
