@@ -3,7 +3,8 @@
 Hackfest Contra a Corrupção, Campina Grande-PB
 20 de agosto de 2016
 
-## Dependências
+## Backend
+### Dependências
 
 Você precisa do R: 
 
@@ -17,14 +18,15 @@ Os pacotes que usamos:
 R -e 'install.packages(c("dplyr", "stringi", "RPostgreSQL", "lubridate", "jsonlite", "plumber", "futile.logger"), repos = "http://cran.rstudio.com/")'
 ```
 
-## Rodando
+### Rodando
 
 ```
-Rscript run_server.R 
+bash run_server.sh
 ```
 
 ## Front-End
 
+### Dependências
 Para rodar o projeto localmente, tenha instalado em sua máquina os seguintes items:
 
 * npm
@@ -37,6 +39,7 @@ sudo apt-get install -y npm
 
 ```
 sudo npm install bower -g
+sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
 Para instalar as dependências, acesse o diretório do projeto e execute os comandos:
@@ -51,14 +54,14 @@ Em seguida:
 bower install
 ```
 
+### Rodando
+
 Por fim, basta executar um servidor local no diretório do projeto. Recomendamos o HTTPSimpleServer do python.
 
 ```
 python -m SimpleHTTPServer 8000
 ```
 
-Acesse a página do projeto via brower pelo link: http://localhost:8000
+Acesse a página principal via browser pelo link: [http://localhost:8000](http://localhost:8000)
 
-(Obs.: caso esteja utilizando a porta 8000, basta alterar o valor no comando python.)
-
-
+Obs.: caso esteja utilizando a porta 8000, basta alterar o valor no comando python.
