@@ -18,6 +18,15 @@ Os pacotes que usamos:
 R -e 'install.packages(c("dplyr", "stringi", "RPostgreSQL", "lubridate", "jsonlite", "plumber", "futile.logger"), repos = "http://cran.rstudio.com/")'
 ```
 
+Precisa também de um BD PostgreSQL para despejar o [dump_camara_db_12-08-16.zip](data/dump_camara_db_12-08-16.zip).
+```
+su postgres
+createdb -T template0 camara_db
+unzip data/dump_camara_db_12-08-16.zip
+psql camara_db < camara_db.dump
+rm -f camara_db.dump
+```
+
 ### Rodando
 
 ```
