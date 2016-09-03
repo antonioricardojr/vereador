@@ -1,5 +1,4 @@
 
-
 start_camaraDB <- function(port = 5432, host = "localhost") {
     library(RPostgreSQL)
     library(dplyr)
@@ -50,7 +49,8 @@ get_ementas_all = function(db) {
                 ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA",
                 "TRANSITO URBANO",
                 ifelse(
-                    ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
+                    ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO" |
+                        ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
                     "DENOMINAÇÃO DE RUA",
                     main_theme
                 )

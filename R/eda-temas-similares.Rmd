@@ -14,6 +14,8 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 library(tidyr)
 library(dplyr)
+library(stringr)
+library(stringi)
 library(ggfortify)
 library(knitr)
 source("vereadores-lib.R")
@@ -21,26 +23,79 @@ source("vereadores-lib.R")
 camara_db <- start_camaraDB(NULL, NULL)
 
 ementas <- tbl(camara_db, sql(
-    "select cons_cand.sigla_partido, cons_cand.nome_urna_candidato, ementas.main_theme
+    "select cons_cand.sigla_partido, cons_cand.nome_urna_candidato, cons_cand.desc_sit_tot_turno, ementas.main_theme, ementas.title, ementas.ementa_id
      from map_ementa_candidato map_cand, consulta_cand cons_cand, ementas 
      where map_cand.sequencial_candidato = cons_cand.sequencial_candidato and 
           map_cand.ementa_id = ementas.ementa_id and 
-          ementas.situation = 'APROVADO' and
           cons_cand.descricao_cargo = 'VEREADOR' and
           map_cand.published_date > '2013-01-01' and 
           cons_cand.ano_eleicao = 2012")) %>% 
     collect()
 
+map_small_themes <- data_frame(main_theme = c('incentivos fiscais', 'sessao intinerante', 
+                                              'taxi', 'diversao', 
+                                              'transposicao - sao francisco', 'racismo', 
+                                              'denominacao de creche', 'denominacao de escola',
+                                              "assitencia social", "dia municipal", 
+                                              "emprego privado", "feriados", "emprego publico", 
+                                              "iptu", "iss", 
+                                              "mercado publico", "feiras livres", 
+                                              "obras municipal", "portadores de necessidades especiais"),
+                               new_theme = c('financas publicas', 'sessao especial', 
+                                             'transito urbano', 'cultura', 
+                                             'aguas e esgoto', 'consciencia negra', 
+                                             'dar nome a proprio publico', 'dar nome a proprio publico', 
+                                             "assistencia social",  "utilidade publica municipal", 
+                                             "utilidade publica municipal",
+                                             "utilidade publica municipal", "utilidade publica municipal", 
+                                             "financas publicas", "financas publicas", 
+                                             "servicos urbanos", "servicos urbanos", 
+                                             "servicos urbanos", "acessibilidade"))
+
+ementas <- ementas %>% 
+    mutate(main_theme = stri_trans_general(main_theme, "LATIN-ASCII") %>% str_to_lower() %>% str_replace_all("\\s+", " ") %>% str_trim(),
+           main_theme = ifelse(ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO" |
+                                   ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
+                               "denominacao de rua", 
+                               ifelse(ementa_id == "2014-05-13#REQUERIMENTO#262#APROVADO" | 
+                                          ementa_id == "2013-11-28#REQUERIMENTO#2808#APROVADO" | 
+                                          ementa_id == "2013-04-16#REQUERIMENTO#812#APROVADO", 
+                                      "servicos urbanos", 
+                                      ifelse(ementa_id == "2015-10-22#PROJETO DE LEI ORDINÁRIA#404#APROVADO", 
+                                             "dar nome a proprio publico", 
+                                             ifelse(ementa_id == "2013-12-19#PROJETO DE LEI ORDINÁRIA#416#APROVADO",
+                                                    "utilidade publica municipal", main_theme))))) %>% 
+    left_join(map_small_themes, by = "main_theme") %>% 
+    mutate(new_theme = ifelse(is.na(new_theme), main_theme, new_theme),
+           main_theme = new_theme) %>% 
+    select(-new_theme)
+
 sumario_tema <- ementas %>% 
+    distinct(ementa_id, main_theme) %>% 
+    count(main_theme) %>% 
+    ungroup()
+
+sumario_vereador <- ementas %>% 
+    count(nome_urna_candidato) %>% 
+    ungroup()
+
+small_themes <- ementas %>%
+    inner_join(sumario_tema %>% filter(n <= 10), by = "main_theme") %>%
+    arrange(desc(n)) %>%
+    .[!duplicated(.$ementa_id),]
+
+sumario_cand_tema <- ementas %>% 
+    # filter(desc_sit_tot_turno != "SUPLENTE") %>% 
     mutate(nome_urna_candidato = paste0(nome_urna_candidato, " - ", sigla_partido)) %>% 
-    count(nome_urna_candidato, main_theme)
+    count(nome_urna_candidato, main_theme) %>% 
+    ungroup()
 
 ```
 
 ## Temas
 
 ```{r echo=FALSE, fig.height=12, fig.width=8}
-p = ggplot(sumario_tema, 
+p = ggplot(sumario_cand_tema, 
            mapping = aes(x = nome_urna_candidato, 
                          y = reorder(main_theme, n), 
                          colour = main_theme,
@@ -50,16 +105,15 @@ p = ggplot(sumario_tema,
     xlab("") + 
     theme(axis.text.x = element_text(angle = 90), legend.position = "none")
 print(p)
-
 ```
 
 ## PCA 
 ```{r, echo=FALSE}
 # temas em formato wide e proporção de atividade
-temas_wide <- sumario_tema %>% 
+temas_wide <- sumario_cand_tema %>% 
     spread(main_theme, n, fill = 0)
 
-temas_prop_wide <- sumario_tema %>% 
+temas_prop_wide <- sumario_cand_tema %>% 
     group_by(nome_urna_candidato) %>% 
     mutate(n = n / sum(n)) %>% 
     ungroup() %>% 
