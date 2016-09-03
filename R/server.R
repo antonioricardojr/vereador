@@ -60,12 +60,12 @@ get_vereador_id = function(id = NA, ano_eleicao = 2012){
 }
 
 #* @get /vereadores/ementas
-get_vereador_ementas = function(nome = '', ano = 2012){
+get_vereador_ementas = function(nome = '', ano_eleicao = 2012){
   if(is.null(nome)){
     stop("Informe o nome do vereador: /vereadores/propostas?nome=xuxa")
   }
   ano_eleicao = as.numeric(ano)
-  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano)
+  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano_eleicao)
 
   if (NROW(ementas_vereador) != 0) {
     ementas_vereador <- ementas_vereador %>%

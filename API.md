@@ -13,6 +13,8 @@
 
 * **/ementas/radial**
 
+Bem específico para fazermos a visualização radial :).
+
 *Method*
 
   `GET`
@@ -20,11 +22,44 @@
 *URL Params*
 
 
-   #* @get /vereadores
+* **/vereadores**
 
-   #* @get /vereadores/ementas
+*Method*
 
-   #* @get /vereadores/ementas/sumario
+  `GET`
+
+*URL Params*
+
+  `id=[''|<sequencial do candidato>]`
+
+  `ano_eleicao=[2012]` - o ano em que o vereador foi eleito
+
+
+* **/vereadores/ementas**
+
+*Method*
+
+  `GET`
+
+*URL Params*
+
+  `nome=<substring do nome>`
+
+  `ano_eleicao=[2012]` - o ano em que o vereador foi eleito
+
+* **/vereadores/ementas/sumario**
+
+*Method*
+
+  `GET`
+
+*URL Params*
+
+  `nome=<substring do nome>`
+
+  `ano_eleicao=[2012]` - o ano em que o vereador foi eleito
+
+TODO
 
    #* @get /relevancia/ementas
 
