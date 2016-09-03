@@ -59,13 +59,13 @@ get_vereador_id = function(id = NA, ano_eleicao = 2012){
     return(vereador)
 }
 
-#* @get /vereadores/propostas
-get_vereador_ementas = function(nome = '', ano = 2012){
+#* @get /vereadores/ementas
+get_vereador_ementas = function(nome = '', ano_eleicao = 2012){
   if(is.null(nome)){
     stop("Informe o nome do vereador: /vereadores/propostas?nome=xuxa")
   }
   ano_eleicao = as.numeric(ano)
-  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano)
+  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano_eleicao)
 
   if (NROW(ementas_vereador) != 0) {
     ementas_vereador <- ementas_vereador %>%
@@ -75,7 +75,7 @@ get_vereador_ementas = function(nome = '', ano = 2012){
   return(ementas_vereador)
 }
 
-#* @get /vereadores/propostas/sumario
+#* @get /vereadores/ementas/sumario
 get_vereador_sumario = function(nome, ano = 2012){
   ano_eleicao = as.numeric(ano)
   ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano)
@@ -99,7 +99,7 @@ get_vereador_sumario = function(nome, ano = 2012){
 }
 
 
-#* @get /relevancia/propostas
+#* @get /relevancia/ementas
 get_relevacia_propostas = function(ano = 2012){
 
   relevancia_propostas <- get_relevancia_ementas(camara_db, ano)
