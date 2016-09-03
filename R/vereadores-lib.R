@@ -24,7 +24,6 @@ get_ementasraw = function(db){
 get_ementas_all = function(db) {
     #' Opções de group_by:
     ementas <- get_ementasraw(db) %>%
-        #select_(group_by, "published_date", "published_month", "situation") %>%
         collect() %>%
         mutate(
             govern = ifelse(
@@ -33,17 +32,35 @@ get_ementas_all = function(db) {
                 "Atual (2013 - 2016)"
             ),
             situation = ifelse(
-                situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
-                "ARQUIVADO/REJEITADO/RETIRADO",
-                ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+              situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
+              "ARQUIVADO/REJEITADO/RETIRADO",
+              ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation
+              )
             ),
-            ementa_type = ifelse(ementa_type == "LEI ORDINÁRIA", "PROJETO DE LEI ORDINÁRIA",
-                                 ifelse(ementa_type == "LEI COMPLEMENTAR", "PROJETO DE LEI COMPLEMENTAR",
-                                        ementa_type)),
-            main_theme = ifelse(ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA", "TRANSITO URBANO",
-                                ifelse(ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO", "DENOMINAÇÃO DE RUA",
-                                          main_theme)),
-            published_year = year(published_date)
+            ementa_type = ifelse(
+              ementa_type == "LEI ORDINÁRIA",
+              "PROJETO DE LEI ORDINÁRIA",
+              ifelse(
+                ementa_type == "LEI COMPLEMENTAR",
+                "PROJETO DE LEI COMPLEMENTAR",
+                ementa_type
+              )
+            ),
+            main_theme = ifelse(
+              ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA",
+              "TRANSITO URBANO",
+              ifelse(
+                ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
+                "DENOMINAÇÃO DE RUA",
+                main_theme
+              )
+            ), 
+            published_year = year(published_date), 
+            tipo_ato = ifelse(
+              ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"), 
+              "Administrativo", 
+              "Legislativo"
+            )
         )
 
     return(ementas)
@@ -188,13 +205,20 @@ get_relevancia_ementas = function(db, ano){
 sumariza_no_tempo = function(ementas,
                              count_by,
                              period = "published_month",
-                             not_older_than = 2013) {
+                             not_older_than = 2013, 
+                             apenas_legislacao = FALSE) {
   #' Conta a quantidade de ementas em um df derivado de get_ementas.
   #' A contagem é pela categoria especificada em `count_by`, acontece
   #' para cada nível da coluna `period` e o resultado tem
   #' zeros para as combinações de count_by e period que não acontecem no
   #' df original.
-  theme_count_m <- ementas %>%
+  filtradas = ementas
+  if(apenas_legislacao){
+    filtradas = filtradas %>% 
+      filter(tipo_ato == "Legislativo")
+  }
+  
+  theme_count_m <- filtradas %>%
     select_(count_by, "published_date", period) %>%
     filter(year(published_date) >= not_older_than) %>%
     group_by_(period) %>%

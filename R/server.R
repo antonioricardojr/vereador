@@ -2,24 +2,32 @@ library(dplyr, warn.conflicts = F)
 library(stringi, warn.conflicts = F)
 library(RPostgreSQL)
 library(lubridate, warn.conflicts = F)
+library(futile.logger)
 source("vereadores-lib.R")
 
 camara_db <- start_camaraDB()
 
 #* @get /ementas/contagem
-get_theme_count = function(count_by = "tema"){
+get_theme_count = function(count_by = "tema", apenas_legislacao = FALSE){
     #' Conta as ementas por mês.
     #' TODO: retornamos apenas a partir de 2013.
     traducao = list("tema" = "main_theme",
                     "situacao" = "situation",
-                    "tipo" = "ementa_type")
+                    "tipo" = "tipo_ato",
+                    "tipo_detalhado" = "ementa_type")
     count_by = traducao[[count_by]]
     if(is.null(count_by)){
         stop("count_by não suportado")
     }
-
-    answer = sumariza_no_tempo(get_ementas_all(camara_db), count_by)
-
+    
+    apenas_legislacao = as.logical(apenas_legislacao)
+    if(is.na(apenas_legislacao)){
+      stop("valor não suportado para apenas_legislacao")
+    }
+    
+    t1 = proc.time()
+    answer = sumariza_no_tempo(get_ementas_all(camara_db), count_by, apenas_legislacao = apenas_legislacao)
+    flog.info(sprintf("GET contagem demorou %gs", (proc.time() - t1)[[3]]))
     return(answer)
 }
 
