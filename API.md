@@ -1,18 +1,31 @@
 
-## Contagem
-----
-  Conta as ementas mês a mês
+* **/ementas/contagem**
 
-* **URL**
-
-  /ementas/contagem
-
-* **Method:**
+*Method*
 
   `GET`
 
-*  **URL Params**
+*URL Params*
 
    `count_by=[tema|situacao|tipo|tipo_detalhado]`
 
    `apenas_legislacao=[true|false]`
+
+* **/ementas/radial**
+
+*Method*
+
+  `GET`
+
+*URL Params*
+
+
+   #* @get /vereadores
+
+   #* @get /vereadores/ementas
+
+   #* @get /vereadores/ementas/sumario
+
+   #* @get /relevancia/ementas
+
+   #* @get /relevancia/vereadores
