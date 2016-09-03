@@ -13,4 +13,6 @@
 
 *  **URL Params**
 
-   `count_by=[tema|situacao|tipo]`
+   `count_by=[tema|situacao|tipo|tipo_detalhado]`
+
+   `apenas_legislacao=[true|false]`
