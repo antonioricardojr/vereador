@@ -1,0 +1,65 @@
+    "animais"
+    "habitacao"
+
+SAUDE
+    "saude"
+
+SEGURANÇA PÚBLICA
+    "seguranca publica"
+    "bombeiros"
+    
+ASSISTÊNCIA SOCIAL
+    "assistencia social"
+    "crianca"
+    "drogas"
+    "mulher"
+    "idoso"
+
+EDUCACAO e CULTURA
+    "educacao"
+    "cultura"
+    "consciencia negra"
+    "inclusao digital"
+    "esportes e lazer"
+
+ASSUNTOS ECONOMICOS
+    "dar nome a proprio publico" 
+    "doacao de imoveis publicos"
+    "financas publicas"
+    "funcionalismo"
+    "agricultura"
+    "bancos"
+
+CIDADE
+    "servicos urbanos"
+    "acessibilidade"
+    "eletrificacao"
+    "aguas e esgoto"
+    "coleta de lixo"
+    "meio ambiente"
+    "denominacao de rua"
+    
+TRANSITO E TRANSPORTE
+    "transito urbano"                                  
+    "transportes urbanos"        
+    "mototaxi"
+
+TELEFONIA
+    "telefonia fixa"
+    "telefonia movel"    
+
+CONGRATULAÇÕES E APLAUSOS
+    "congratulacoes"
+    "medalha de honra ao merito"
+    "titulo de cidadania"
+    "voto de aplauso"
+
+ADMINISTRATIVO
+    "alteracao de lei"
+    "audiencia publica"
+    "fiscalizacao"
+    "mocao"
+    "outros"
+    "sessao especial"
+    "utilidade publica municipal"
+
