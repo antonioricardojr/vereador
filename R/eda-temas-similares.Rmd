@@ -1,0 +1,137 @@
+---
+title: "Similaridade de Temas na Câmara"
+author: "Nazareno e Augusto"
+output:
+    html_document:
+        theme: yeti
+        toc: true
+        toc_float: true
+        fig_width: 8
+        fig_height: 8
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyr)
+library(dplyr)
+library(ggfortify)
+library(knitr)
+source("vereadores-lib.R")
+
+camara_db <- start_camaraDB(NULL, NULL)
+
+ementas <- tbl(camara_db, sql(
+    "select cons_cand.sigla_partido, cons_cand.nome_urna_candidato, ementas.main_theme
+     from map_ementa_candidato map_cand, consulta_cand cons_cand, ementas 
+     where map_cand.sequencial_candidato = cons_cand.sequencial_candidato and 
+          map_cand.ementa_id = ementas.ementa_id and 
+          ementas.situation = 'APROVADO' and
+          cons_cand.descricao_cargo = 'VEREADOR' and
+          map_cand.published_date > '2013-01-01' and 
+          cons_cand.ano_eleicao = 2012")) %>% 
+    collect()
+
+sumario_tema <- ementas %>% 
+    mutate(nome_urna_candidato = paste0(nome_urna_candidato, " - ", sigla_partido)) %>% 
+    count(nome_urna_candidato, main_theme)
+
+```
+
+## Temas
+
+```{r echo=FALSE, fig.height=12, fig.width=8}
+p = ggplot(sumario_tema, 
+           mapping = aes(x = nome_urna_candidato, 
+                         y = reorder(main_theme, n), 
+                         colour = main_theme,
+                         size = n / 70)) + 
+    geom_point(alpha = 0.7) + 
+    ylab("") +
+    xlab("") + 
+    theme(axis.text.x = element_text(angle = 90), legend.position = "none")
+print(p)
+
+```
+
+## PCA 
+```{r, echo=FALSE}
+# temas em formato wide e proporção de atividade
+temas_wide <- sumario_tema %>% 
+    spread(main_theme, n, fill = 0)
+
+temas_prop_wide <- sumario_tema %>% 
+    group_by(nome_urna_candidato) %>% 
+    mutate(n = n / sum(n)) %>% 
+    ungroup() %>% 
+    spread(main_theme, n, fill = 0)
+
+# necessário para os métodos de visualização de PCA
+row.names(temas_wide) = temas_wide$nome_urna_candidato
+temas_wide$nome_urna_candidato <- NULL
+row.names(temas_prop_wide) = temas_prop_wide$nome_urna_candidato
+temas_prop_wide$nome_urna_candidato <- NULL
+```
+
+### Proporção
+Usando a proporção consideramos todos os vereadores como iguais porque todos somarão 1, até mesmo os suplentes que tem pouquissimas ementas. 
+
+* Vereadores são similares se tem proporções similares na distribuição de temas
+* Temas são similares se tem proporções similares na distribuição de vereadores (exemplo: dois temas tem todos os vereadores dedicando 10% de sua atenção)
+
+```{r, echo=FALSE}
+# PCA
+temas_pca = temas_prop_wide %>% 
+    prcomp(scale = TRUE)
+
+# kable(temas_pca$rotation)
+
+autoplot(temas_pca, label = TRUE, label.size = 3, shape = FALSE)
+
+autoplot(temas_pca, label = TRUE, label.size = 3, shape = FALSE, 
+         loadings = TRUE, loadings.colour = 'blue',
+         loadings.label = TRUE, loadings.label.size = 3)
+
+# Porcentagem da variância explicada
+plot_pve <- function(prout){
+    pr.var <- temas_pca$sdev ^ 2
+    pve <- pr.var / sum(pr.var)
+    df = data.frame(x = 1:length(pve), y = cumsum(pve))
+    ggplot(df, aes(x = x, y = y)) + 
+        geom_point(size = 3) + 
+        geom_line() + 
+        labs(x = 'Principal Component', y = 'Cumulative Proportion of Variance Explained')
+}
+
+plot_pve(temas_pca)
+```
+
+### Contagem
+Já com a contagem, o enfoque são nos temas. Como fazemos scale = TRUE, então os vereadores com muitas ementas dominam (lado esquerdo, top e bottom) e aqueles com poucas (principalmente os [suplentes](https://github.com/augustoqm/cg-insights/blob/master/insights/como_funciona.md)) são praticamente descartados (lado direito).
+
+
+```{r, echo=FALSE}
+# PCA
+temas_pca = temas_wide %>% 
+    prcomp(scale = TRUE)
+
+# kable(temas_pca$rotation)
+
+autoplot(temas_pca, label = TRUE, label.size = 3, shape = FALSE)
+
+autoplot(temas_pca, label = TRUE, label.size = 3, shape = FALSE, 
+         loadings = TRUE, loadings.colour = 'blue',
+         loadings.label = TRUE, loadings.label.size = 3)
+
+# Porcentagem da variância explicada
+plot_pve <- function(prout){
+    pr.var <- temas_pca$sdev ^ 2
+    pve <- pr.var / sum(pr.var)
+    df = data.frame(x = 1:length(pve), y = cumsum(pve))
+    ggplot(df, aes(x = x, y = y)) + 
+        geom_point(size = 3) + 
+        geom_line() + 
+        labs(x = 'Principal Component', y = 'Cumulative Proportion of Variance Explained')
+}
+
+plot_pve(temas_pca)
+```
