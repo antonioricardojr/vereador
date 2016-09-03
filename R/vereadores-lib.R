@@ -95,8 +95,8 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
     return(vereadores_lista)
 }
 
-#Junção de vereador com ementas
-get_ementas_por_vereador_raw = function(db, nome, ano) {
+get_ementas_por_vereador_raw = function(db, id_candidato, ano) {
+#' Junção de vereador com ementas
     tbl(db,
         sql(
             paste0(
@@ -105,14 +105,14 @@ get_ementas_por_vereador_raw = function(db, nome, ano) {
                   WHERE map.sequencial_candidato = v.sequencial_candidato and
                         map.ementa_id = e.ementa_id and
                         map.published_date > '2013-01-01' and
-                        v.ano_eleicao = ", ano, " and v.nome_urna_candidato ilike '%", nome, "%'"
+                        v.ano_eleicao = ", ano, " and v.sequencial_candidato = ", id_candidato
             )
         )) %>%
         return()
 }
 
-#Junção de vereador com ementas, exibir todas as propostas
 get_propostas_todos_vereador_raw = function(db, ano) {
+#' Junção de vereador com ementas, exibir todas as propostas
     tbl(db,
         sql(
             paste0(
@@ -127,17 +127,32 @@ get_propostas_todos_vereador_raw = function(db, ano) {
     return()
 }
 
-get_ementas_por_vereador = function(db, nome = NA, ano) {
+get_ementas_por_vereador = function(db, id_candidato = NA, ano) {
     #' Retorna as ementas cuja lista de proponentes inclui um dado nome.
     #' Ao especificar '' ou NA, todas as ementas são retornadas.
-    if (!is.na(nome) & nome != '') {
-        propostas <- get_ementas_por_vereador_raw(db, nome, ano) %>%
+    if (! is.na(id_candidato) & id_candidato != '') {
+        propostas <- get_ementas_por_vereador_raw(db, id_candidato, ano) %>%
             collect()
     } else {
         propostas <- get_propostas_todos_vereador_raw(db, ano) %>%
             collect()
     }
 
+    # TODO código repetido...
+    propostas = propostas %>% 
+      mutate(
+        tipo_ato = ifelse(
+          ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"),
+          "Administrativo",
+          "Legislativo"
+        ),
+        situation = ifelse(
+          situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
+          "ARQUIVADO/REJEITADO/RETIRADO",
+          ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+        )
+      )
+    
     return(propostas)
 }
 

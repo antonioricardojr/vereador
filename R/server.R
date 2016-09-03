@@ -2,6 +2,7 @@ library(dplyr, warn.conflicts = F)
 library(stringi, warn.conflicts = F)
 library(RPostgreSQL)
 library(lubridate, warn.conflicts = F)
+library(purrr, warn.conflicts = F)
 library(futile.logger)
 source("vereadores-lib.R")
 
@@ -60,57 +61,85 @@ get_vereador_id = function(id = NA, ano_eleicao = 2012){
 }
 
 #* @get /vereadores/ementas
-get_vereador_ementas = function(nome = '', ano_eleicao = 2012){
-  if(is.null(nome)){
-    stop("Informe o nome do vereador: /vereadores/ementas?nome=xuxa")
-  }
+get_vereador_ementas = function(id_candidato = NA, ano_eleicao = 2012){
+  checa_id(id_candidato)
   ano_eleicao = as.numeric(ano_eleicao)
-  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano_eleicao)
+  ementas_vereador <- get_ementas_por_vereador(camara_db, id_candidato = id_candidato, ano_eleicao)
 
   if (NROW(ementas_vereador) != 0) {
     ementas_vereador <- ementas_vereador %>%
-      select(sequencial_candidato, nome_urna_candidato, document_number, process_number, ementa_type, published_date, approval_date, title, source, proponents, situation, main_theme)
+      select(
+        sequencial_candidato,
+        nome_urna_candidato,
+        document_number,
+        process_number,
+        ementa_type,
+        published_date,
+        approval_date,
+        title,
+        source,
+        proponents,
+        situation,
+        main_theme, 
+        tipo_ato
+      )
   }
 
   return(ementas_vereador)
 }
 
+checa_id <- function(id_candidato) {
+  if (is.na(id_candidato) | id_candidato == '') {
+    stop("é necessário informar o id sequencial do candidato segundo o TSE")
+  }
+}
+
 #* @get /vereadores/ementas/sumario
-get_vereador_sumario = function(nome, ano_eleicao = 2012){
+get_vereador_sumario = function(id_candidato = NA, ano_eleicao = 2012){
   ano_eleicao = as.numeric(ano_eleicao)
-  ementas_vereador <- get_ementas_por_vereador(camara_db, nome, ano_eleicao)
+  if(is.na(ano_eleicao)){
+    stop("informe o ano em que o vereador foi eleito")
+  }
+  
+  t1 = proc.time()
+  
+  ementas_vereador <- get_ementas_por_vereador(camara_db, id_candidato, ano_eleicao)
 
   if(NROW(ementas_vereador) == 0)
     return(data.frame())
 
-  sumario_situacao <- ementas_vereador %>%
-    count(situation)
-  sumario_tipo = ementas_vereador %>%
-    count(ementa_type)
-  sumario_tema = ementas_vereador %>%
-    count(main_theme)
-
-  return(list(
-    ementas_vereador$nome_candidato[1],
-    sumario_situacao,
-    sumario_tipo,
-    sumario_tema
-  ))
+  df2json_format <- function(ementas, campo) {
+    df = ementas %>%
+      count_(c("sequencial_candidato", campo))
+    projson = df %>% 
+      split(.$sequencial_candidato) %>% 
+      map(~ list("values" = ., 
+                 "total" = sum(.$n), 
+                 "nome" = .$sequencial_candidato[1]))
+    names(projson) = NULL
+    return(projson)
+  }
+  
+  flog.info(sprintf("GET /vereadores/ementas/sumario demorou %gs", (proc.time() - t1)[[3]]))
+  
+  return(
+    list(
+      "situation" = df2json_format(ementas_vereador, "situation"),
+      "tipo" = df2json_format(ementas_vereador, "tipo_ato"),
+      "tema" = df2json_format(ementas_vereador, "main_theme")
+    )
+  )
 }
 
 
 #* @get /relevancia/ementas
 get_relevacia_propostas = function(ano = 2012){
-
   relevancia_propostas <- get_relevancia_ementas(camara_db, ano)
-
   return(relevancia_propostas)
 }
 
 #* @get /relevancia/vereadores
 get_relevacia_vereadores = function(ano_eleicao = 2012){
-
   relevancia_vereadores <- get_relevancia_vereadores(camara_db, ano_eleicao)
-
   return(relevancia_vereadores)
 }
