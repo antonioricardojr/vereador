@@ -132,6 +132,9 @@ get_relevacia_vereadores = function(ano_eleicao = 2012){
 sumario2json_format <- function(ementas, campo) {
   df = ementas %>%
     count_(c("sequencial_candidato", campo))
+  nomes = ementas %>% 
+    select(sequencial_candidato, nome_urna_candidato) %>% 
+    unique()
 
   x1 = unique(unlist(ementas[, "sequencial_candidato"]))
   x2 = unique(unlist(ementas[, campo]))
@@ -142,14 +145,17 @@ sumario2json_format <- function(ementas, campo) {
       df,
       by = c("Var1" = "sequencial_candidato", "Var2" = campo)
     ) %>%
-    mutate(n = ifelse(is.na(n), 0, n))
+    mutate(n = ifelse(is.na(n), 0, n)) 
   names(df) = c("sequencial_candidato", "count_by", "n")
+  df = df %>% 
+    left_join(nomes, by = "sequencial_candidato")
 
   projson = df %>%
     split(.$sequencial_candidato) %>%
-    map(~ list("values" = .,
+    map(~ list("values" = .[,c("count_by", "n")],
                "total" = sum(.$n),
-               "nome" = .$sequencial_candidato[1]))
+               "nome" = .$nome_urna_candidato[1],
+               "id" = .$sequencial_candidato[1]))
   names(projson) = NULL
   return(projson)
 }
