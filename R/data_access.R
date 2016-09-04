@@ -24,8 +24,20 @@ get_ementasraw = function(db){
 }
 
 get_vereadores_raw = function(db, id = NA, ano_eleicao){
+  #' Dados dos vereadores eleitos mais suplentes
   if (is.na(id)) {
-    tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and ano_eleicao = ", ano_eleicao))) %>%
+    tbl(db, sql(
+      paste0(
+        "SELECT DISTINCT v.* 
+          FROM consulta_cand v, ementas e, map_ementa_candidato map
+          WHERE map.sequencial_candidato = v.sequencial_candidato and
+            map.ementa_id = e.ementa_id and
+            map.published_date > '2013-01-01' and
+            v.descricao_ue = 'CAMPINA GRANDE' and
+            v.codigo_cargo = 13 and (v.cod_sit_tot_turno in (1, 2, 3, 5)) and 
+            v.ano_eleicao = ", ano_eleicao
+      )
+    )) %>% 
       return()
   } else{
     tbl(db, sql(paste0("SELECT * FROM consulta_cand where descricao_ue = 'CAMPINA GRANDE' and sequencial_candidato = ",

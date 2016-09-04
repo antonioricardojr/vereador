@@ -28,7 +28,7 @@ get_theme_count = function(count_by = "tema", apenas_legislacao = FALSE){
     }
 
     t1 = proc.time()
-    answer = sumariza_no_tempo(get_ementas_all(camara_db), count_by, apenas_legislacao = apenas_legislacao)
+    answer = get_sumario_no_tempo(camara_db, count_by, apenas_legislacao = apenas_legislacao)
     flog.info(sprintf("GET contagem demorou %gs", (proc.time() - t1)[[3]]))
     names(answer)[2] = "count_by"
     return(answer)
