@@ -1,5 +1,7 @@
 source("./data_access.R")
 
+map_temas = read.csv("./map_temas.csv", stringsAsFactors = F)
+
 get_ementas_all = function(db) {
     #' Opções de group_by:
     ementas <- get_ementasraw(db) %>%
@@ -28,12 +30,17 @@ get_ementas_all = function(db) {
             main_theme = ifelse(
                 ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA",
                 "TRANSITO URBANO",
-                ifelse(
-                    ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO" |
-                        ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
-                    "DENOMINAÇÃO DE RUA",
-                    main_theme
-                )
+                ifelse(ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO" |
+                           ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
+                       "DENOMINAÇÃO DE RUA",
+                       ifelse(ementa_id == "2014-05-13#REQUERIMENTO#262#APROVADO" |
+                                  ementa_id == "2013-11-28#REQUERIMENTO#2808#APROVADO" |
+                                  ementa_id == "2013-04-16#REQUERIMENTO#812#APROVADO",
+                              "SERVIÇOS URBANOS",
+                              ifelse(ementa_id == "2015-10-22#PROJETO DE LEI ORDINÁRIA#404#APROVADO",
+                                     "DAR NOME A PRÓPRIO PÚBLICO",
+                                     ifelse(ementa_id == "2013-12-19#PROJETO DE LEI ORDINÁRIA#416#APROVADO",
+                                            "UTILIDADE PÚBLICA MUNICIPAL", main_theme))))
             ),
             published_year = year(published_date),
             tipo_ato = ifelse(
@@ -41,11 +48,13 @@ get_ementas_all = function(db) {
                 "Administrativo",
                 "Legislativo"
             )
-        )
+        ) %>%
+        left_join(map_temas, by = "main_theme") %>%
+        mutate(main_theme = meta_theme) %>%
+        select(-meta_theme)
 
     return(ementas)
 }
-
 
 get_vereadores = function(db, id = NA, ano_eleicao = 2012){
     vereadores_lista <- get_vereadores_raw(db, id, ano_eleicao) %>%
@@ -58,7 +67,7 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
 get_ementas_por_vereador = function(db, id_candidato = NA, ano) {
     #' Retorna as ementas cuja lista de proponentes inclui um dado nome.
     #' Ao especificar '' ou NA, todas as ementas são retornadas.
-    if (! is.na(id_candidato) & id_candidato != '') {
+    if (!is.na(id_candidato) & id_candidato != '') {
         propostas <- get_ementas_por_vereador_raw(db, id_candidato, ano) %>%
             collect()
     } else {
@@ -67,20 +76,20 @@ get_ementas_por_vereador = function(db, id_candidato = NA, ano) {
     }
 
     # TODO código repetido...
-    propostas = propostas %>% 
-      mutate(
-        tipo_ato = ifelse(
-          ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"),
-          "Administrativo",
-          "Legislativo"
-        ),
-        situation = ifelse(
-          situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
-          "ARQUIVADO/REJEITADO/RETIRADO",
-          ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+    propostas = propostas %>%
+        mutate(
+            tipo_ato = ifelse(
+                ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"),
+                "Administrativo",
+                "Legislativo"
+            ),
+            situation = ifelse(
+                situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
+                "ARQUIVADO/REJEITADO/RETIRADO",
+                ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+            )
         )
-      )
-    
+
     return(propostas)
 }
 
@@ -158,7 +167,7 @@ sumariza_no_tempo = function(ementas,
     #' zeros para as combinações de count_by e period que não acontecem no
     #' df original.
     filtradas = ementas
-    if(apenas_legislacao){
+    if (apenas_legislacao) {
         filtradas = filtradas %>%
             filter(tipo_ato == "Legislativo")
     }
