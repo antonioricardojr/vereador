@@ -7,7 +7,7 @@ get_ementas_all = function(db,
                            apenas_legislacao = FALSE) {
   
   filtra_leg = function(tipo, filtrar){
-    return (filtrar & (tipo == "Legislativo"))
+    return (!filtrar | (tipo == "Legislativo"))
   }
   
   oldest = paste0(not_older_than, "-01-01")
