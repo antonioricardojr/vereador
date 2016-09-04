@@ -54,7 +54,7 @@ get_weekly_radialinfo = function(){
 }
 
 #* @get /vereadores
-get_vereador_id = function(id = NA, ano_eleicao = 2012){
+get_vereador = function(id = NA, ano_eleicao = 2012){
     id = as.numeric(id)
     ano_eleicao = as.numeric(ano_eleicao)
     vereador = get_vereadores(camara_db, id, ano_eleicao)
@@ -89,14 +89,8 @@ get_vereador_ementas = function(id_candidato = NA, ano_eleicao = 2012){
   return(ementas_vereador)
 }
 
-checa_id <- function(id_candidato) {
-  if (is.na(id_candidato) | id_candidato == '') {
-    stop("é necessário informar o id sequencial do candidato segundo o TSE")
-  }
-}
-
 #* @get /vereadores/ementas/sumario
-get_vereador_sumario = function(id_candidato = NA, ano_eleicao = 2012){
+get_sumario_vereador = function(id_candidato = NA, ano_eleicao = 2012){
   ano_eleicao = as.numeric(ano_eleicao)
   if(is.na(ano_eleicao)){
     stop("informe o ano em que o vereador foi eleito")
@@ -108,26 +102,14 @@ get_vereador_sumario = function(id_candidato = NA, ano_eleicao = 2012){
 
   if(NROW(ementas_vereador) == 0)
     return(data.frame())
-
-  df2json_format <- function(ementas, campo) {
-    df = ementas %>%
-      count_(c("sequencial_candidato", campo))
-    projson = df %>% 
-      split(.$sequencial_candidato) %>% 
-      map(~ list("values" = ., 
-                 "total" = sum(.$n), 
-                 "nome" = .$sequencial_candidato[1]))
-    names(projson) = NULL
-    return(projson)
-  }
   
   flog.info(sprintf("GET /vereadores/ementas/sumario demorou %gs", (proc.time() - t1)[[3]]))
   
   return(
     list(
-      "situation" = df2json_format(ementas_vereador, "situation"),
-      "tipo" = df2json_format(ementas_vereador, "tipo_ato"),
-      "tema" = df2json_format(ementas_vereador, "main_theme")
+      "situation" = sumario2json_format(ementas_vereador, "situation"),
+      "tipo" = sumario2json_format(ementas_vereador, "tipo_ato"),
+      "tema" = sumario2json_format(ementas_vereador, "main_theme")
     )
   )
 }
@@ -143,4 +125,36 @@ get_relevacia_propostas = function(ano = 2012){
 get_relevacia_vereadores = function(ano_eleicao = 2012){
   relevancia_vereadores <- get_relevancia_vereadores(camara_db, ano_eleicao)
   return(relevancia_vereadores)
+}
+
+
+sumario2json_format <- function(ementas, campo) {
+  df = ementas %>%
+    count_(c("sequencial_candidato", "nome_urna_candidato", campo))
+  
+  x1 = unique(unlist(ementas[, "sequencial_candidato"]))
+  x2 = unique(unlist(ementas[, campo]))
+  df <-
+    left_join(
+      expand.grid(x1, x2,
+                  stringsAsFactors = F),
+      df,
+      by = c("Var1" = "sequencial_candidato", "Var2" = campo)
+    ) %>%
+    mutate(n = ifelse(is.na(n), 0, n))
+  names(df) = c("sequencial_candidato", "count_by", "n")
+  
+  projson = df %>% 
+    split(.$sequencial_candidato) %>% 
+    map(~ list("values" = ., 
+               "total" = sum(.$n), 
+               "nome" = .$sequencial_candidato[1]))
+  names(projson) = NULL
+  return(projson)
+}
+
+checa_id <- function(id_candidato) {
+  if (is.na(id_candidato) | id_candidato == '') {
+    stop("é necessário informar o id sequencial do candidato segundo o TSE")
+  }
 }
