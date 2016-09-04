@@ -1,5 +1,5 @@
-#' 
-#' Funções que acessam o BD. Tudo que tiver SQL fica aqui. 
+#'
+#' Funções que acessam o BD. Tudo que tiver SQL fica aqui.
 #'
 
 start_camaraDB <- function(port = 5432, host = "localhost") {
@@ -18,7 +18,7 @@ start_camaraDB <- function(port = 5432, host = "localhost") {
 
 get_ementasraw = function(db){
   ementas_raw <- tbl(db, sql("SELECT * FROM ementas")) %>%
-    filter(published_date >= "2009-01-01") %>%
+    filter(published_date >= "2013-01-01") %>%
     mutate(published_month = date_trunc('month', published_date)) %>%
     return()
 }

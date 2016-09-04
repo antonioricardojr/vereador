@@ -82,7 +82,7 @@ get_vereador_ementas = function(id_candidato = NA, ano_eleicao = 2012){
         source,
         proponents,
         situation,
-        main_theme, 
+        main_theme,
         tipo_ato
       )
   }
@@ -96,16 +96,16 @@ get_sumario_vereador = function(id_candidato = NA, ano_eleicao = 2012){
   if(is.na(ano_eleicao)){
     stop("informe o ano em que o vereador foi eleito")
   }
-  
+
   t1 = proc.time()
-  
+
   ementas_vereador <- get_ementas_por_vereador(camara_db, id_candidato, ano_eleicao)
 
   if(NROW(ementas_vereador) == 0)
     return(data.frame())
-  
+
   flog.info(sprintf("GET /vereadores/ementas/sumario demorou %gs", (proc.time() - t1)[[3]]))
-  
+
   return(
     list(
       "situation" = sumario2json_format(ementas_vereador, "situation"),
@@ -132,7 +132,7 @@ get_relevacia_vereadores = function(ano_eleicao = 2012){
 sumario2json_format <- function(ementas, campo) {
   df = ementas %>%
     count_(c("sequencial_candidato", campo))
-  
+
   x1 = unique(unlist(ementas[, "sequencial_candidato"]))
   x2 = unique(unlist(ementas[, campo]))
   df <-
@@ -144,11 +144,11 @@ sumario2json_format <- function(ementas, campo) {
     ) %>%
     mutate(n = ifelse(is.na(n), 0, n))
   names(df) = c("sequencial_candidato", "count_by", "n")
-  
-  projson = df %>% 
-    split(.$sequencial_candidato) %>% 
-    map(~ list("values" = ., 
-               "total" = sum(.$n), 
+
+  projson = df %>%
+    split(.$sequencial_candidato) %>%
+    map(~ list("values" = .,
+               "total" = sum(.$n),
                "nome" = .$sequencial_candidato[1]))
   names(projson) = NULL
   return(projson)
