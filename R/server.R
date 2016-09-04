@@ -91,7 +91,7 @@ get_vereador_ementas = function(id_candidato = NA, ano_eleicao = 2012){
 }
 
 #* @get /vereadores/ementas/sumario
-get_sumario_vereador = function(id_candidato = NA, ano_eleicao = 2012){
+get_sumario_vereador = function(id_candidato = NA, ano_eleicao = 2012, apenas_legislacao = FALSE){
   ano_eleicao = as.numeric(ano_eleicao)
   if(is.na(ano_eleicao)){
     stop("informe o ano em que o vereador foi eleito")
@@ -99,7 +99,7 @@ get_sumario_vereador = function(id_candidato = NA, ano_eleicao = 2012){
 
   t1 = proc.time()
 
-  ementas_vereador <- get_ementas_por_vereador(camara_db, id_candidato, ano_eleicao)
+  ementas_vereador <- get_ementas_por_vereador(camara_db, id_candidato, ano_eleicao, apenas_legislacao)
 
   if(NROW(ementas_vereador) == 0)
     return(data.frame())

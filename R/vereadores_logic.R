@@ -75,7 +75,7 @@ get_vereadores = function(db, id = NA, ano_eleicao = 2012){
   return(vereadores_lista)
 }
 
-get_ementas_por_vereador = function(db, id_candidato = NA, ano) {
+get_ementas_por_vereador = function(db, id_candidato = NA, ano, apenas_legislacao = FALSE) {
     #' Retorna as ementas cuja lista de proponentes inclui um dado nome.
     #' Ao especificar '' ou NA, todas as ementas são retornadas.
     if (!is.na(id_candidato) & id_candidato != '') {
@@ -101,6 +101,11 @@ get_ementas_por_vereador = function(db, id_candidato = NA, ano) {
             )
         )
 
+    if(apenas_legislacao){
+      propostas = propostas %>% 
+        filter(tipo_ato == "Legislativo")
+    }
+    
     return(propostas)
 }
 

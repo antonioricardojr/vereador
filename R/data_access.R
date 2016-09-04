@@ -25,6 +25,7 @@ get_ementasraw = function(db){
 
 get_vereadores_raw = function(db, id = NA, ano_eleicao){
   #' Dados dos vereadores eleitos mais suplentes
+  #' TODO: levar ano_eleicao em conta no filtro do published date
   if (is.na(id)) {
     tbl(db, sql(
       paste0(
