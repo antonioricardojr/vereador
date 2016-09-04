@@ -130,7 +130,7 @@ get_relevacia_vereadores = function(ano_eleicao = 2012){
 
 sumario2json_format <- function(ementas, campo) {
   df = ementas %>%
-    count_(c("sequencial_candidato", "nome_urna_candidato", campo))
+    count_(c("sequencial_candidato", campo))
   
   x1 = unique(unlist(ementas[, "sequencial_candidato"]))
   x2 = unique(unlist(ementas[, campo]))
