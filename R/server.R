@@ -4,7 +4,8 @@ library(RPostgreSQL)
 library(lubridate, warn.conflicts = F)
 library(purrr, warn.conflicts = F)
 library(futile.logger)
-source("vereadores-lib.R")
+source("data_access.R")
+source("vereadores_logic.R")
 
 camara_db <- start_camaraDB()
 
