@@ -56,7 +56,7 @@ get_ementas_all = function(db,
       )
     )
   
-  ementas %>% 
+  ementas = ementas %>% 
     collect() %>% 
     filter(filtra_leg(tipo_ato, apenas_legislacao)) %>% 
     mutate(year = year(published_date)) %>% 
@@ -182,7 +182,6 @@ get_sumario_no_tempo = function(db,
   
   theme_count_m <- ementas %>%
     select_(count_by, "published_date", period) %>%
-    filter(year(published_date) >= not_older_than) %>%
     group_by_(period) %>%
     count_(count_by) %>%
     ungroup() %>%
