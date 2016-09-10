@@ -13,58 +13,77 @@ get_ementas_all = function(db,
     oldest = paste0(not_older_than, "-01-01")
 
     ementas = get_ementasraw(db) %>%
-        filter(published_date > oldest) %>%
-        mutate(
-            govern = ifelse(
-                published_date < "2013-01-01",
-                "Anterior (2009 - 2012)",
-                "Atual (2013 - 2016)"
-            ),
-            situation = ifelse(
-                situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
-                "ARQUIVADO/REJEITADO/RETIRADO",
-                ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
-            ),
-            ementa_type = ifelse(
-                ementa_type == "LEI ORDINÁRIA",
-                "PROJETO DE LEI ORDINÁRIA",
-                ifelse(
-                    ementa_type == "LEI COMPLEMENTAR",
-                    "PROJETO DE LEI COMPLEMENTAR",
-                    ementa_type
-                )
-            ),
-            main_theme = ifelse(
-                ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA",
-                "TRANSITO URBANO",
-                ifelse(ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO" |
-                           ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
-                       "DENOMINAÇÃO DE RUA",
-                       ifelse(ementa_id == "2014-05-13#REQUERIMENTO#262#APROVADO" |
-                                  ementa_id == "2013-11-28#REQUERIMENTO#2808#APROVADO" |
-                                  ementa_id == "2013-04-16#REQUERIMENTO#812#APROVADO",
-                              "SERVIÇOS URBANOS",
-                              ifelse(ementa_id == "2015-10-22#PROJETO DE LEI ORDINÁRIA#404#APROVADO",
-                                     "DAR NOME A PRÓPRIO PÚBLICO",
-                                     ifelse(ementa_id == "2013-12-19#PROJETO DE LEI ORDINÁRIA#416#APROVADO",
-                                            "UTILIDADE PÚBLICA MUNICIPAL", main_theme))))
-            ),
-            tipo_ato = ifelse(
-                ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"),
-                "Administrativo",
-                "Legislativo"
-            )
-        )
-
-    ementas = ementas %>%
-        collect() %>%
-        filter(filtra_leg(tipo_ato, apenas_legislacao)) %>%
-        mutate(year = year(published_date)) %>%
-        left_join(map_temas, by = "main_theme") %>%
-        mutate(main_theme = meta_theme) %>%
-        select(-meta_theme)
-
+      filter(published_date > oldest) %>%
+      filter(filtra_leg(tipo_ato, apenas_legislacao)) %>%
+      transforma_ementas_para_view()
+    
     return(ementas)
+}
+
+transforma_ementas_para_view = function(ementas) {
+  #' Transforma os dados tais quais vêm do crawler em categorias e 
+  #' labels mais inteligíveis para retornarmos na API. 
+  ementas = ementas %>%
+    mutate(
+      govern = ifelse(
+        published_date < "2013-01-01",
+        "Anterior (2009 - 2012)",
+        "Atual (2013 - 2016)"
+      ),
+      situation = ifelse(
+        situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
+        "ARQUIVADO/REJEITADO/RETIRADO",
+        ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
+      ),
+      ementa_type = ifelse(
+        ementa_type == "LEI ORDINÁRIA",
+        "PROJETO DE LEI ORDINÁRIA",
+        ifelse(
+          ementa_type == "LEI COMPLEMENTAR",
+          "PROJETO DE LEI COMPLEMENTAR",
+          ementa_type
+        )
+      ),
+      main_theme = ifelse(
+        ementa_type == "REQUERIMENTO" & main_theme == "DENOMINAÇÃO DE RUA",
+        "TRANSITO URBANO",
+        ifelse(
+          ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO" |
+            ementa_id == "2015-10-07#PROJETO DE LEI ORDINÁRIA#374#APROVADO",
+          "DENOMINAÇÃO DE RUA",
+          ifelse(
+            ementa_id == "2014-05-13#REQUERIMENTO#262#APROVADO" |
+              ementa_id == "2013-11-28#REQUERIMENTO#2808#APROVADO" |
+              ementa_id == "2013-04-16#REQUERIMENTO#812#APROVADO",
+            "SERVIÇOS URBANOS",
+            ifelse(
+              ementa_id == "2015-10-22#PROJETO DE LEI ORDINÁRIA#404#APROVADO",
+              "DAR NOME A PRÓPRIO PÚBLICO",
+              ifelse(
+                ementa_id == "2013-12-19#PROJETO DE LEI ORDINÁRIA#416#APROVADO",
+                "UTILIDADE PÚBLICA MUNICIPAL",
+                main_theme
+              )
+            )
+          )
+        )
+      ),
+      tipo_ato = ifelse(
+        ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"),
+        "Administrativo",
+        "Legislativo"
+      )
+    )
+  
+  ementas = ementas %>%
+    collect() %>%
+    mutate(year = year(published_date)) %>%
+    left_join(map_temas, by = "main_theme") %>%
+    mutate(main_theme = meta_theme) %>%
+    select(-meta_theme)
+  
+  return(ementas)
+  
 }
 
 get_vereadores = function(db, id = NA, ano_eleicao = 2012){
@@ -88,21 +107,9 @@ get_ementas_por_vereador = function(db, id_candidato = NA, ano, apenas_legislaca
             collect()
     }
 
-    # TODO código repetido...
     propostas = propostas %>%
-        mutate(
-            tipo_ato = ifelse(
-                ementa_type %in% c("REQUERIMENTO", "INDICAÇÂO", "PEDIDO DE INFORMAÇÃO"),
-                "Administrativo",
-                "Legislativo"
-            ),
-            situation = ifelse(
-                situation %in% c("ARQUIVADO", "REJEITADO", "RETIRADO"),
-                "ARQUIVADO/REJEITADO/RETIRADO",
-                ifelse(situation == "PEDIDO DE VISTAS", "EM TRAMITAÇÃO", situation)
-            )
-        )
-
+      transforma_ementas_para_view()
+    
     if(apenas_legislacao){
         propostas = propostas %>%
             filter(tipo_ato == "Legislativo")
@@ -111,24 +118,26 @@ get_ementas_por_vereador = function(db, id_candidato = NA, ano, apenas_legislaca
     return(propostas)
 }
 
-# Atos Normativos:
-# PROJETO DE RESOLUÇÃO,
-# PROJETO DE DECRETO LEGISLATIVO ou DECRETO,
-# PROJETO DE LEI COMPLEMENTAR,
-# PROJETO DE LEI ORDINÁRIA,
-# PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO
-
-# Atos Administrativos
-# REQUERIMENTO
-# INDICAÇÂO
-# PEDIDO DE INFORMAÇÃO
-
-# Tipos de ementas desconsideradas: LEI COMPLEMENTAR, LEI ORDINÁRIA, EM IMPLANTAÇÃO
 
 get_relevancia_ementas = function(db, ano){
     #' Retorna todas as ementas do BD junto com uma relevância calculada em
     #' função do tipo de ementa.
     #' TODO Descrever a lógica das relevância
+    #' 
+    # Atos Normativos:
+    # PROJETO DE RESOLUÇÃO,
+    # PROJETO DE DECRETO LEGISLATIVO ou DECRETO,
+    # PROJETO DE LEI COMPLEMENTAR,
+    # PROJETO DE LEI ORDINÁRIA,
+    # PROJETO DE EMENDA A LEI ORGANICA DO MUNICIPIO
+    
+    # Atos Administrativos
+    # REQUERIMENTO
+    # INDICAÇÂO
+    # PEDIDO DE INFORMAÇÃO
+    
+    # Tipos de ementas desconsideradas: LEI COMPLEMENTAR, LEI ORDINÁRIA, EM IMPLANTAÇÃO
+    
     type_relevance = c(1, 1, 1, 1, 2, 2, 3, 4, 5)
     ementa_types = c("DECRETO",
                       "PROJETO DE DECRETO LEGISLATIVO",
