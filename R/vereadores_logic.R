@@ -5,18 +5,12 @@ map_temas = read.csv("./map_temas.csv", stringsAsFactors = F)
 get_ementas_all = function(db,
                            not_older_than = 2013,
                            apenas_legislacao = FALSE) {
-
-    filtra_leg = function(tipo, filtrar){
-        return (!filtrar | (tipo == "Legislativo"))
-    }
-
     oldest = paste0(not_older_than, "-01-01")
 
     ementas = get_ementasraw(db) %>%
       filter(published_date > oldest) %>%
-      filter(filtra_leg(tipo_ato, apenas_legislacao)) %>%
       transforma_ementas_para_view()
-    
+        
     return(ementas)
 }
 
@@ -193,9 +187,14 @@ get_sumario_no_tempo = function(db,
     #' para cada nível da coluna `period` e o resultado tem
     #' zeros para as combinações de count_by e period que não acontecem no
     #' df original.
-    ementas = get_ementas_all(db, not_older_than, apenas_legislacao) %>%
-        collect()
-
+    filtra_leg = function(tipo, filtrar) {
+      return (!filtrar | (tipo == "Legislativo"))
+    } 
+    
+    ementas = get_ementas_all(db, not_older_than) %>%
+      collect() %>% 
+      filter(filtra_leg(tipo_ato, apenas_legislacao))
+    
     theme_count_m = ementas %>%
         select_(count_by, "published_date", period) %>%
         group_by_(period) %>%
